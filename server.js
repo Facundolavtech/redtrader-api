@@ -8,7 +8,7 @@ require("dotenv").config();
 module.exports = function () {
   app.use(express.json());
   app.use(cors());
-  const port = process.env.port || 4000;
+  const port = process.env.PORT || 4000;
 
   app.use("/api/users", require("./src/routes/users"));
   app.use("/api/videos", require("./src/routes/videos"));
