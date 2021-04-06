@@ -103,7 +103,11 @@ exports.updateUser = async function (req, res) {
   try {
     const findUser = await User.findById(id);
     if (findUser) {
+      if (values.password) {
+        values.password = await hash(values.password, 10);
+      }
       await User.findByIdAndUpdate(id, values);
+
       return res.status(200).json({ msg: "Usuario actualizado" });
     } else {
       return res.status(404).json({ msg: "No se encontro el usuario" });
