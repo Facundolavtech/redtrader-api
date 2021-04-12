@@ -6,6 +6,7 @@ const VideoSchema = new Schema(
     title: { type: String, required: true },
     src: { type: String, required: true },
     openToFreeUsers: { type: Boolean, required: true },
+    order: { type: Number, required: true },
   },
   { timestamps: true }
 );

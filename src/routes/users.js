@@ -8,6 +8,9 @@ const {
   deleteUser,
 } = require("../controllers/users");
 const {
+  sendResetPasswordLink,
+} = require("../controllers/users/forgotpassword");
+const {
   checkUserIdentity,
   authMiddleware,
 } = require("../middlewares/user.middleware");
@@ -20,5 +23,6 @@ router.get("/auth", authMiddleware, authUser);
 router.get("/:id", getUser);
 router.put("/:id", checkUserIdentity, updateUser);
 router.delete("/:id", checkUserIdentity, deleteUser);
+router.post("/forgotpassword", sendResetPasswordLink);
 
 module.exports = router;
