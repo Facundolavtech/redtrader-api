@@ -26,7 +26,7 @@ exports.createPay = async function (req, res) {
       buyer_email: email,
       buyer_name: name,
       item_name: "Plan mensual RedTrader",
-      ipn_url: "https://redtrader-api.herokuapp.com/payhook",
+      ipn_url: "https://redtrader-api.herokuapp.com/api/payhook",
       success_url: "https://redtraderacademy.com/dashboard",
       cancel_url: "https://redtraderacademy.com/dashboard/pay",
     };
