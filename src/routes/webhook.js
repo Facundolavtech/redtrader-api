@@ -9,19 +9,9 @@ const cpClient = new Coinpayments({
 });
 
 router.post("/hook", async (req, res) => {
-  console.log(req);
-  console.log(req.headers);
-  const data = req.body;
-  console.log(data);
-  const options = {
-    txid: "CPFD36ENT8VNTXGHBTIA8M0GOS",
-  };
-
-  await cpClient.getTx(options, (err, response) => {
-    if (err) console.log(err);
-    console.log(response);
-    res.status(200).json(response);
-  });
+  console.log(req.body.txn_id);
+  console.log(req.body.status);
+  console.log(req.status);
 });
 
 module.exports = router;
