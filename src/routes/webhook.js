@@ -8,16 +8,14 @@ router.post("/hook", async (req, res) => {
 
   console.log(req.body, txn_id, email, status);
 
-  if (status === 100) {
+  if (status == 100) {
     const findUserByEmail = await User.findOne({ email });
 
     if (!findUserByEmail) {
       return res.status(404).send("No se encontro un usuario con ese email");
     }
 
-    findUserByEmail.update({ plan: true });
-
-    findUserByEmail.save();
+    User.findByIdAndUpdate(findUserByEmail._id, { plan: true });
 
     return res.status(200).send("Plan actualizado con exito");
   }
