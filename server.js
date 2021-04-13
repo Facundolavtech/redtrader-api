@@ -13,7 +13,8 @@ module.exports = function () {
 
   app.use("/api/users", require("./src/routes/users"));
   app.use("/api/videos", require("./src/routes/videos"));
-  app.use("/", require("./src/routes/webhook"));
+  app.use("/api/payhook", require("./src/routes/payhook"));
+  app.use("/api/pays", require("./src/routes/pays"));
 
   app.listen(port, () => {
     console.log(`Server on port ${port}`);

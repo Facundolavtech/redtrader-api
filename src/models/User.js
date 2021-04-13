@@ -7,6 +7,15 @@ const UserSchema = new Schema(
     password: { type: String, required: true },
     plan: { type: Boolean, required: true, default: false },
     isSuperAdmin: { type: Boolean, default: false },
+    first_month: { type: Boolean, default: false },
+    plan_details: {
+      expire: {
+        type: Date,
+      },
+      txn_id: {
+        type: String,
+      },
+    },
   },
   { timestamps: true }
 );
