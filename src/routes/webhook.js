@@ -15,7 +15,7 @@ router.post("/hook", async (req, res) => {
       return res.status(404).send("No se encontro un usuario con ese email");
     }
 
-    User.findByIdAndUpdate(findUserByEmail._id, { plan: true });
+    await User.findByIdAndUpdate(findUserByEmail._id, { plan: true });
 
     return res.status(200).send("Plan actualizado con exito");
   }
