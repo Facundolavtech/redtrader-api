@@ -14,7 +14,7 @@ module.exports = function () {
   app.use(cors());
 
   //Routes
-  // app.use("/api/users", require("./src/routes/users"));
+  app.use("/api/users", require("./src/routes/users"));
   app.use("/api/videos", require("./src/routes/videos"));
   app.use("/payhook", require("./src/routes/payhook"));
   app.use("/api/pays", require("./src/routes/pays"));
