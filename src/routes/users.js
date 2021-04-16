@@ -9,12 +9,12 @@ const {
   deleteUser,
 } = require("../controllers/users");
 
-const {
-  sendResetPasswordEmail,
-} = require("../controllers/users/forgotpassword");
+// const {
+//   sendResetPasswordEmail,
+// } = require("../controllers/users/forgotpassword");
 
 const { updatePlan } = require("../controllers/users/updateplan");
-const { resetPassword } = require("../controllers/users/resetpassword");
+// const { resetPassword } = require("../controllers/users/resetpassword");
 const {
   sendConfirmPasswordEmail,
   confirmAccount,
