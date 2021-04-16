@@ -5,8 +5,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "nodemon index.js",
-    "start": "node index.js",
-    "heroku-postbuild": "npm run production"
+    "start": "node index.js"
   },
   "dependencies": {
     "bcrypt": "^5.0.1",
