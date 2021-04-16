@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 
-require("./src/config/database");
+require("./config/database");
 require("dotenv").config();
 
 module.exports = function () {
@@ -13,10 +13,10 @@ module.exports = function () {
   const port = process.env.PORT || 4000;
 
   //Routes
-  app.use("/api/users", require("./src/routes/users"));
-  app.use("/api/videos", require("./src/routes/videos"));
-  app.use("/payhook", require("./src/routes/payhook"));
-  app.use("/api/pays", require("./src/routes/pays"));
+  app.use("/api/users", require("./routes/users"));
+  app.use("/api/videos", require("./routes/videos"));
+  app.use("/payhook", require("./routes/payhook"));
+  app.use("/api/pays", require("./routes/pays"));
 
   //Run server
   app.listen(port, () => {

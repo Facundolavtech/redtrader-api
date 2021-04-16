@@ -11,7 +11,6 @@ const {
 
 const { sendResetPasswordEmail } = require("../controllers/users/forgotpw");
 
-const { updatePlan } = require("../controllers/users/updatePlan");
 const { resetPassword } = require("../controllers/users/resetpw");
 const {
   sendConfirmPasswordEmail,
@@ -22,6 +21,8 @@ const {
   checkUserIdentity,
   authMiddleware,
 } = require("../middlewares/user.middleware");
+
+const { updatePlan } = require("../controllers/users/updateplan");
 
 const router = Router();
 
