@@ -35,8 +35,8 @@ router.put("/:id", checkUserIdentity, updateUser);
 router.delete("/:id", checkUserIdentity, deleteUser);
 router.post("/sendconfirmemail", sendConfirmPasswordEmail);
 router.post("/confirmaccount", confirmAccount);
-router.post("/forgotpassword", sendResetPasswordEmail);
-router.post("/resetpassword", resetPassword);
+// router.post("/forgotpassword", sendResetPasswordEmail);
+// router.post("/resetpassword", resetPassword);
 router.post("/updateplan", updatePlan);
 
 module.exports = router;
