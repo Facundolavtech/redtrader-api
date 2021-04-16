@@ -33,7 +33,7 @@ router.get("/auth", authMiddleware, authUser);
 router.get("/:id", getUser);
 router.put("/:id", checkUserIdentity, updateUser);
 router.delete("/:id", checkUserIdentity, deleteUser);
-router.post("/sendconfirmemail", sendConfirmPasswordEmail);
+// router.post("/sendconfirmemail", sendConfirmPasswordEmail);
 // router.post("/confirmaccount", confirmAccount);
 // router.post("/forgotpassword", sendResetPasswordEmail);
 // router.post("/resetpassword", resetPassword);
