@@ -15,10 +15,10 @@ const {
 
 const { updatePlan } = require("../controllers/users/updateplan");
 // const { resetPassword } = require("../controllers/users/resetpassword");
-const {
-  sendConfirmPasswordEmail,
-  confirmAccount,
-} = require("../controllers/users/confirmaccount");
+// const {
+//   sendConfirmPasswordEmail,
+//   confirmAccount,
+// } = require("../controllers/users/confirmaccount");
 
 const {
   checkUserIdentity,
@@ -34,7 +34,7 @@ router.get("/:id", getUser);
 router.put("/:id", checkUserIdentity, updateUser);
 router.delete("/:id", checkUserIdentity, deleteUser);
 router.post("/sendconfirmemail", sendConfirmPasswordEmail);
-router.post("/confirmaccount", confirmAccount);
+// router.post("/confirmaccount", confirmAccount);
 // router.post("/forgotpassword", sendResetPasswordEmail);
 // router.post("/resetpassword", resetPassword);
 router.post("/updateplan", updatePlan);
