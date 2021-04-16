@@ -9,16 +9,14 @@ const {
   deleteUser,
 } = require("../controllers/users");
 
-const {
-  sendResetPasswordEmail,
-} = require("../controllers/users/forgotPassword");
+const { sendResetPasswordEmail } = require("../controllers/users/forgotpw");
 
 const { updatePlan } = require("../controllers/users/updatePlan");
-const { resetPassword } = require("../controllers/users/resetPassword");
+const { resetPassword } = require("../controllers/users/resetpw");
 const {
   sendConfirmPasswordEmail,
   confirmAccount,
-} = require("../controllers/users/confirmAccount");
+} = require("../controllers/users/confirm");
 
 const {
   checkUserIdentity,
