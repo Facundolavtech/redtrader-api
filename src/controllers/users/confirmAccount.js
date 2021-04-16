@@ -1,6 +1,6 @@
 const ConfirmAccountToken = require("../../models/ConfirmAccountToken");
 const User = require("../../models/User");
-const { v4: uuidv4 } = require("uuid");
+// const { v4: uuidv4 } = require("uuid");
 require("dotenv").config();
 const nodemailer = require("nodemailer");
 
@@ -17,7 +17,7 @@ exports.sendConfirmPasswordEmail = async function (req, res) {
     }
 
     const userId = findUserByEmail._id;
-    const token = uuidv4();
+    // const token = uuidv4();
 
     const confirmToken = await new ConfirmAccountToken({ userId, token });
 

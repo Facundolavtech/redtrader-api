@@ -1,5 +1,5 @@
 const User = require("../../models/User");
-const { v4: uuidv4 } = require("uuid");
+// const { v4: uuidv4 } = require("uuid");
 const ForgotPwToken = require("../../models/ForgotPasswordToken");
 require("dotenv").config();
 const nodemailer = require("nodemailer");
@@ -17,7 +17,7 @@ exports.sendResetPasswordEmail = async function (req, res) {
     }
 
     const userId = findUserByEmail._id;
-    const token = uuidv4();
+    // const token = uuidv4();
 
     const forgotToken = await new ForgotPwToken({ userId, token });
 
