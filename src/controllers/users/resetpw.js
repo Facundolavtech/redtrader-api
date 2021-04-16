@@ -34,6 +34,8 @@ exports.resetPassword = async function (req, res) {
 
     await User.findByIdAndUpdate(id, { password: hashPassword });
 
+    await ForgotPwToken.findOneAndRemove({ token });
+
     return res.status(200).send("Contraseña cambiada con exito");
   } catch (error) {
     return res.status(500).json({ msg: "Ocurrio un error" });

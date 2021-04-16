@@ -79,6 +79,8 @@ exports.confirmAccount = async function (req, res) {
 
     await User.findByIdAndUpdate(id, { confirmed: true });
 
+    await ConfirmAccountToken.findOneAndRemove({ token });
+
     return res.status(200).send("Cuenta confirmada con exito");
   } catch (error) {
     return res.status(500).json({ msg: "Ocurrio un error" });
