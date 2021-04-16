@@ -11,14 +11,14 @@ const {
 
 const {
   sendResetPasswordEmail,
-} = require("../controllers/users/forgotPassword");
+} = require("../controllers/users/forgotpassword");
 
-const { updatePlan } = require("../controllers/users/updatePlan");
-const { resetPassword } = require("../controllers/users/resetPassword");
+const { updatePlan } = require("../controllers/users/updateplan");
+const { resetPassword } = require("../controllers/users/resetpassword");
 const {
   sendConfirmPasswordEmail,
   confirmAccount,
-} = require("../controllers/users/confirmAccount");
+} = require("../controllers/users/confirmaccount");
 
 const {
   checkUserIdentity,

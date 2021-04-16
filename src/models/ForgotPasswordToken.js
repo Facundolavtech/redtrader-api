@@ -1,6 +1,6 @@
 const { Schema, model } = require("mongoose");
 
-const ForgotPasswordToken = new Schema({
+const ForgotPasswordTokenSchema = new Schema({
   userId: {
     type: Schema.Types.ObjectId,
     required: true,
@@ -17,4 +17,4 @@ const ForgotPasswordToken = new Schema({
   },
 });
 
-module.exports = model("ForgotPwToken", ForgotPasswordToken);
+module.exports = model("ForgotPwToken", ForgotPasswordTokenSchema);
