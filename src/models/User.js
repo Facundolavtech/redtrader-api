@@ -5,6 +5,7 @@ const UserSchema = new Schema(
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
+    confirmed: { type: Boolean, default: false },
     plan: { type: Boolean, required: true, default: false },
     isSuperAdmin: { type: Boolean, default: false },
     first_month: { type: Boolean, default: false },

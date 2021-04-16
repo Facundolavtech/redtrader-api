@@ -1,73 +1,49 @@
 const User = require("../../models/User");
-const Mailgun = require("mailgun-js");
+const { v4: uuidv4 } = require("uuid");
+const ForgotPwToken = require("../../models/ForgotPasswordToken");
 require("dotenv").config();
 const nodemailer = require("nodemailer");
 
-// exports.sendResetPasswordLink = async function (req, res) {
-//   const { email } = req.body;
-
-//   const findUserByEmail = await User.findOne({ email });
-//   if (!findUserByEmail) {
-//     return res
-//       .status(404)
-//       .send("No se encuentra un usuario registrado con ese correo");
-//   }
-
-//   const mg = new Mailgun({
-//     apiKey: process.env.MAILGUN_API_KEY,
-//     domain: "mg.redtrader.com",
-//   });
-
-//   const message = {
-//     from: "redtraderoficial@gmail.com",
-//     to: "facuhlavagninodq@gmail.com",
-//     subject: "Reestablecer contraseña de RedTrader",
-//     text: "Testing some Mailgun awesomness!",
-//   };
-
-//   mg.messages().send(message, function (error, body) {
-//     if (error) {
-//       console.log(error);
-//     } else {
-//       console.log(body);
-//       res.status(200).json({ msg: "Email enviado!" });
-//     }
-//   });
-
-//   try {
-//   } catch (error) {
-//     res.status(500).json({ msg: "Ocurrio un error" });
-//   }
-// };
-
 exports.sendResetPasswordLink = async function (req, res) {
+  const { email } = req.body;
+
   try {
+    const findUserByEmail = await User.findOne({ email });
+
+    if (!findUserByEmail) {
+      return res
+        .status(404)
+        .send("No se encontro ningun usuario registrado con ese correo");
+    }
+
+    const userId = findUserByEmail._id;
+    const token = uuidv4();
+
+    const forgotToken = await new ForgotPwToken({ userId, token });
+
+    forgotToken.save();
+
     const transport = nodemailer.createTransport({
-      host: "email-smtp.sa-east-1.amazonaws.com",
+      host: "smtp-relay.sendinblue.com",
       port: 587,
-      // secure: true, // use TLS
       auth: {
-        user: "AKIA3OHQJUXUIXD3IHCM",
-        pass: "BGujrlYEQkYO19OwudvZfI9+3xUoYEqtiUI3mgRbzRls",
+        user: "redtraderoficial@gmail.com",
+        pass: "BVF2jrhJvzLkRXGP",
       },
-      // tls: {
-      //   // do not fail on invalid certs
-      //   rejectUnauthorized: false,
-      // },
     });
+
+    const url = process.env.clientURL || "http://localhost:3000";
 
     const message = {
       from: "redtraderoficial@gmail.com",
-      to: "redtraderoficial@gmail.com",
-      subject: "Recuperar contraseña",
-      html:
-        "<p>Ingresa al siguiente enlace para cambiar tu contraseña, <strong>https://localhost:3000/iawdiawbnuidbad/diwandianbd</strong></p><br>",
+      to: email,
+      subject: "Reestablecer contraseña de RedTrader",
+      html: `<p style="color: #777;">Ingresa al siguiente enlace para cambiar tu contraseña</p><a href="${url}/resetpassword/params?id=${userId}&token=${token}" style="padding: 10px 40px; background: #f50606; text-align: center; text-decoration: none; color: #fff; margin-top: 15px; border-radius: 10px; display: inline-block; font-weight: bold;">Reestablecer contraseña</a>`,
     };
 
-    transport.sendMail(message, (err, info) => {
-      if (err) console.log(err);
-      console.log(info);
-      return res.status(200).send(info);
+    await transport.sendMail(message, (err, info) => {
+      if (err) return res.status(400).send("Ocurrio un error");
+      return res.status(200).send("Email enviado con exito");
     });
   } catch (error) {
     return res.status(500).json({ msg: "Ocurrio un error" });
