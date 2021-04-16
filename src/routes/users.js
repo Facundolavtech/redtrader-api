@@ -9,16 +9,16 @@ const {
   deleteUser,
 } = require("../controllers/users");
 
-// const {
-//   sendResetPasswordEmail,
-// } = require("../controllers/users/forgotpassword");
+const {
+  sendResetPasswordEmail,
+} = require("../controllers/users/forgotPassword");
 
-const { updatePlan } = require("../controllers/users/updateplan");
-// const { resetPassword } = require("../controllers/users/resetpassword");
+const { updatePlan } = require("../controllers/users/updatePlan");
+const { resetPassword } = require("../controllers/users/resetPassword");
 const {
   sendConfirmPasswordEmail,
   confirmAccount,
-} = require("../controllers/users/confirmaccount");
+} = require("../controllers/users/confirmAccount");
 
 const {
   checkUserIdentity,
@@ -35,8 +35,8 @@ router.put("/:id", checkUserIdentity, updateUser);
 router.delete("/:id", checkUserIdentity, deleteUser);
 router.post("/sendconfirmemail", sendConfirmPasswordEmail);
 router.post("/confirmaccount", confirmAccount);
-// router.post("/forgotpassword", sendResetPasswordEmail);
-// router.post("/resetpassword", resetPassword);
+router.post("/forgotpassword", sendResetPasswordEmail);
+router.post("/resetpassword", resetPassword);
 router.post("/updateplan", updatePlan);
 
 module.exports = router;
