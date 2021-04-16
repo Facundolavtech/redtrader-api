@@ -7,9 +7,9 @@ const {
   updateUser,
   deleteUser,
 } = require("../controllers/users");
-const {
-  sendResetPasswordEmail,
-} = require("../controllers/users/forgotPassword");
+// const {
+//   sendResetPasswordEmail,
+// } = require("../controllers/users/forgotPassword");
 const { updatePlan } = require("../controllers/users/updatePlan");
 const { resetPassword } = require("../controllers/users/resetPassword");
 const {
@@ -29,7 +29,7 @@ router.post("/register", createUser);
 router.post("/login", loginUser);
 router.post("/sendconfirmemail", sendConfirmPasswordEmail);
 router.post("/confirmaccount", confirmAccount);
-router.post("/forgotpassword", sendResetPasswordEmail);
+// router.post("/forgotpassword", sendResetPasswordEmail);
 router.post("/resetpassword", resetPassword);
 router.post("/updateplan", updatePlan);
 router.put("/:id", checkUserIdentity, updateUser);
