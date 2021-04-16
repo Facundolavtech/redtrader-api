@@ -21,7 +21,7 @@ exports.sendResetPasswordEmail = async function (req, res) {
 
     const forgotToken = await new ForgotPwToken({ userId, token });
 
-    forgotToken.save();
+    await forgotToken.save();
 
     const transport = nodemailer.createTransport({
       host: "smtp-relay.sendinblue.com",

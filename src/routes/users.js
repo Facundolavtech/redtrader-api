@@ -21,6 +21,7 @@ const {
   sendConfirmPasswordEmail,
   confirmAccount,
 } = require("../controllers/users/confirmAccount");
+
 const {
   checkUserIdentity,
   authMiddleware,
