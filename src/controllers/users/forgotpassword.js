@@ -4,7 +4,7 @@ const ForgotPwToken = require("../../models/ForgotPasswordToken");
 require("dotenv").config();
 const nodemailer = require("nodemailer");
 
-exports.sendResetPasswordLink = async function (req, res) {
+exports.sendResetPasswordEmail = async function (req, res) {
   const { email } = req.body;
 
   try {
@@ -32,7 +32,7 @@ exports.sendResetPasswordLink = async function (req, res) {
       },
     });
 
-    const url = process.env.clientURL || "http://localhost:3000";
+    const url = process.env.clientURL;
 
     const message = {
       from: "redtraderoficial@gmail.com",

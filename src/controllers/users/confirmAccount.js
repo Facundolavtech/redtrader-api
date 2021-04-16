@@ -32,7 +32,7 @@ exports.sendConfirmPasswordEmail = async function (req, res) {
       },
     });
 
-    const url = process.env.clientURL || "http://localhost:3000";
+    const url = process.env.clientURL;
 
     const message = {
       from: "redtraderoficial@gmail.com",
