@@ -1,7 +1,6 @@
 const ConfirmAccountToken = require("../../models/ConfirmAccountToken");
 const User = require("../../models/User");
 const { v4: uuidv4 } = require("uuid");
-require("dotenv").config();
 const nodemailer = require("nodemailer");
 
 exports.sendConfirmPasswordEmail = async function (req, res) {
@@ -32,7 +31,7 @@ exports.sendConfirmPasswordEmail = async function (req, res) {
       },
     });
 
-    const url = process.env.clientURL;
+    const url = "https://redtraderacademy.com";
 
     const message = {
       from: "redtraderoficial@gmail.com",
