@@ -6,12 +6,11 @@ require("./src/config/database");
 require("dotenv").config();
 
 module.exports = function () {
-  const port = process.env.PORT || 4000;
-
   //Middlewares
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
   app.use(cors());
+  const port = process.env.PORT || 4000;
 
   //Routes
   app.use("/api/users", require("./src/routes/users"));
