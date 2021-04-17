@@ -1,6 +1,8 @@
 const express = require("express");
 const app = express();
 const cors = require("cors");
+const cron = require("node-cron");
+const deletePlan = require("../src/tasks/deletePlan");
 
 require("./config/database");
 require("dotenv").config();
@@ -11,6 +13,11 @@ module.exports = function () {
   app.use(express.urlencoded({ extended: true }));
   app.use(cors());
   const port = process.env.PORT || 4000;
+
+  cron.schedule("* * * * *  ", function () {
+    console.log("Deleting expire plans");
+    deletePlan();
+  });
 
   //Routes
   app.use("/api/users", require("./routes/users"));
