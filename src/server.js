@@ -14,7 +14,7 @@ module.exports = function () {
   app.use(cors());
   const port = process.env.PORT || 4000;
 
-  cron.schedule("* * * *   ", function () {
+  cron.schedule("* * * *", function () {
     console.log("Deleting expire plans");
     deletePlan();
   });
