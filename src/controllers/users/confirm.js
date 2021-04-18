@@ -86,3 +86,18 @@ exports.confirmAccount = async function (req, res) {
     return res.status(500).json({ msg: "Ocurrio un error" });
   }
 };
+
+exports.getConfirmToken = async function (req, res) {
+  const userId = req.params.id;
+  try {
+    const findToken = await ConfirmAccountToken.findOne({ userId });
+
+    if (!findToken) {
+      return res.status(200).send();
+    } else {
+      return res.status(400).send();
+    }
+  } catch (error) {
+    return res.status(500).json({ msg: "Ocurrio un error" });
+  }
+};

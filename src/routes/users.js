@@ -15,6 +15,7 @@ const { resetPassword } = require("../controllers/users/resetpw");
 const {
   sendConfirmPasswordEmail,
   confirmAccount,
+  getConfirmToken,
 } = require("../controllers/users/confirm");
 
 const {
@@ -34,6 +35,7 @@ router.put("/:id", checkUserIdentity, updateUser);
 router.delete("/:id", checkUserIdentity, deleteUser);
 router.post("/sendconfirmemail", sendConfirmPasswordEmail);
 router.post("/confirmaccount", confirmAccount);
+router.get("/confirmaccount/:id", getConfirmToken);
 router.post("/forgotpassword", sendResetPasswordEmail);
 router.post("/resetpassword", resetPassword);
 router.post("/updateplan", updatePlan);

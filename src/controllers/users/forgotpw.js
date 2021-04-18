@@ -15,6 +15,18 @@ exports.sendResetPasswordEmail = async function (req, res) {
         .send("No se encontro ningun usuario registrado con ese correo");
     }
 
+    const findTokenById = await ForgotPwToken.findOne({
+      userId: findUserByEmail._id,
+    });
+
+    if (findTokenById) {
+      return res
+        .status(200)
+        .send(
+          "Ya enviaste el correo de confirmacion, espera antes de enviar uno nuevo"
+        );
+    }
+
     const userId = findUserByEmail._id;
     const token = uuidv4();
 

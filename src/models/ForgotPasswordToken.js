@@ -13,7 +13,7 @@ const ForgotPasswordTokenSchema = new Schema({
   createdAt: {
     type: Date,
     default: Date.now,
-    expires: 3600,
+    expires: 1200,
   },
 });
 
