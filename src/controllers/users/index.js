@@ -1,5 +1,6 @@
 const User = require("../../models/User");
 const { hash, compare } = require("bcrypt");
+const short = require("shortid");
 const generateToken = require("../../utils/generateToken");
 
 exports.createUser = async function (req, res) {
@@ -17,11 +18,17 @@ exports.createUser = async function (req, res) {
 
     newUser.password = await hash(password, 10);
 
+    newUser.short_id = await short()
+      .toUpperCase()
+      .slice(0, 6)
+      .replace(/[^a-zA-Z0-9]/g, `${Math.floor(Math.random() * 10) + 1}`);
+
     await newUser.save().then(() => {
       const tokenPayload = {
         id: newUser.id,
         email: newUser.email,
       };
+
       generateToken(tokenPayload).then((token) => {
         return res.status(200).json({ msg: "Registrado con exito", token });
       });

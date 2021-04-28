@@ -1,9 +1,11 @@
 const { Schema, model } = require("mongoose");
+const { nanoid } = require("nanoid");
 
 const UserSchema = new Schema(
   {
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
+    short_id: { type: String, unique: true },
     password: { type: String, required: true },
     confirmed: { type: Boolean, default: false },
     plan: { type: Boolean, required: true, default: false },
