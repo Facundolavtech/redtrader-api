@@ -10,7 +10,7 @@ const {
 } = require("../controllers/users");
 
 const { sendResetPasswordEmail } = require("../controllers/users/forgotpw");
-
+const { checkAdmin } = require("../middlewares/admin.middleware");
 const { resetPassword } = require("../controllers/users/resetpw");
 const {
   sendConfirmPasswordEmail,
@@ -24,6 +24,11 @@ const {
 } = require("../middlewares/user.middleware");
 
 const { updatePlan } = require("../controllers/users/updateplan");
+const {
+  updatePlanAdmin,
+  updateAdmin,
+  deleteAccount,
+} = require("../controllers/admin");
 
 const router = Router();
 
@@ -39,5 +44,8 @@ router.get("/confirmaccount/:id", getConfirmToken);
 router.post("/forgotpassword", sendResetPasswordEmail);
 router.post("/resetpassword", resetPassword);
 router.post("/updateplan", updatePlan);
+router.put("/admin/updatePlan/:id", checkAdmin, updatePlanAdmin);
+router.put("/admin/updateAdmin/:id", checkAdmin, updateAdmin);
+router.delete("/admin/deleteAccount/:id/:email", checkAdmin, deleteAccount);
 
 module.exports = router;
