@@ -15,6 +15,7 @@ exports.checkAdmin = async function (req, res, next) {
     }
 
     req.id = userId;
+
     next();
   } catch (error) {
     return res.status(500).send("Ocurrio un error");

@@ -24,6 +24,7 @@ module.exports = function () {
   app.use("/api/videos", require("./routes/videos"));
   app.use("/payhook", require("./routes/payhook"));
   app.use("/api/pays", require("./routes/pays"));
+  app.use("/api/coupons", require("./routes/coupons"));
 
   //Run server
   app.listen(port, () => {

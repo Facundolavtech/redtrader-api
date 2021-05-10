@@ -10,6 +10,18 @@ const UserSchema = new Schema(
     plan: { type: Boolean, required: true, default: false },
     isSuperAdmin: { type: Boolean, default: false },
     first_month: { type: Boolean, default: false },
+    discount: {
+      type: {
+        active: { type: Boolean },
+        percent: { type: Number },
+        coupon_name: { type: String },
+      },
+      default: {
+        active: false,
+        percent: 0,
+        coupon_name: null,
+      },
+    },
     plan_details: {
       expire: {
         type: Date,
