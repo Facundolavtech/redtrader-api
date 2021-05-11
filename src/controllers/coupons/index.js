@@ -71,9 +71,9 @@ exports.applyCoupon = async function (req, res) {
 
 exports.getAllCoupons = async function (req, res) {
   try {
-    const allCoupons = await Coupon.find({});
+    const coupons = await Coupon.find({}).sort({ createdAt: "desc" });
 
-    return res.status(200).json({ coupons: allCoupons });
+    return res.status(200).json({ coupons });
   } catch (error) {
     return res.status(500).send("Ocurrio un error");
   }
