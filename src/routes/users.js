@@ -27,6 +27,7 @@ const { updatePlan } = require("../controllers/users/updateplan");
 const {
   updatePlanAdmin,
   updateAdmin,
+  updateEducator,
   deleteAccount,
 } = require("../controllers/admin");
 
@@ -46,6 +47,7 @@ router.post("/resetpassword", resetPassword);
 router.post("/updateplan", updatePlan);
 router.put("/admin/updatePlan/:id", checkAdmin, updatePlanAdmin);
 router.put("/admin/updateAdmin/:id", checkAdmin, updateAdmin);
+router.put("/admin/updateEducator/:id", checkAdmin, updateEducator);
 router.delete("/admin/deleteAccount/:id/:email", checkAdmin, deleteAccount);
 
 module.exports = router;

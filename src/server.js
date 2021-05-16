@@ -3,14 +3,17 @@ const app = express();
 const cors = require("cors");
 const cron = require("node-cron");
 const deletePlan = require("../src/tasks/deletePlan");
+const node_media_server = require("./nms/media_server");
 
 require("./config/database");
 require("dotenv").config();
 
 module.exports = function () {
+  node_media_server.run();
+
   //Middlewares
-  app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
+  app.use(express.json({ extended: true }));
   app.use(cors());
   const port = process.env.PORT || 4000;
 
@@ -25,6 +28,9 @@ module.exports = function () {
   app.use("/payhook", require("./routes/payhook"));
   app.use("/api/pays", require("./routes/pays"));
   app.use("/api/coupons", require("./routes/coupons"));
+  app.use("/api/educator/settings", require("./routes/lives/settings"));
+  app.use("/api/lives/streams", require("./routes/lives/streams"));
+  app.use("/api/lives/educator", require("./routes/lives/educator"));
 
   //Run server
   app.listen(port, () => {

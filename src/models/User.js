@@ -10,6 +10,8 @@ const UserSchema = new Schema(
     plan: { type: Boolean, required: true, default: false },
     isSuperAdmin: { type: Boolean, default: false },
     first_month: { type: Boolean, default: false },
+    role_educator: { type: Boolean, default: false },
+    stream_key: { type: String },
     discount: {
       type: {
         active: { type: Boolean },

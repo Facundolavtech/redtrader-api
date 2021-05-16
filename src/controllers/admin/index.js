@@ -51,7 +51,7 @@ exports.updateAdmin = async function (req, res) {
 };
 
 exports.deleteAccount = async function (req, res) {
-  const email = req.params.email;
+  const { email } = req.body;
 
   try {
     const findUserByEmail = await User.findOne({ email });
@@ -59,11 +59,28 @@ exports.deleteAccount = async function (req, res) {
     if (!findUserByEmail) {
       return res.status(404).json("No se encontro un usuario con ese correo");
     }
-    console.log(findUserByEmail);
 
     await User.findOneAndRemove({ email });
 
     return res.status(200).json("Usuario eliminado con exito");
+  } catch (error) {
+    return res.status(500).send("Ocurrio un error");
+  }
+};
+
+exports.updateEducator = async function (req, res) {
+  const { email, role_educator } = req.body;
+
+  try {
+    const findUserByEmail = await User.findOne({ email });
+
+    if (!findUserByEmail) {
+      return res.status(404).json("No se encontro un usuario con ese correo");
+    }
+
+    await User.findOneAndUpdate({ email }, { role_educator, plan: true });
+
+    return res.status(200).json("Educador actualizado");
   } catch (error) {
     return res.status(500).send("Ocurrio un error");
   }
