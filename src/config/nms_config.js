@@ -15,14 +15,12 @@ const nms_config = {
       mediaroot: "./lives/media",
       allow_origin: "*",
     },
-<<<<<<< HEAD
-=======
-https: {
+    https: {
 	port: 8443,
+	key: "./private.key",
 	cert: "./certificate.crt",
-	key: "./privatekey.pem",
-},
->>>>>>> adbe8f5784d4d2ac0979e6ca979ebe03695d46fd
+	passphrase: "",
+    },
     trans: {
       ffmpeg: "/usr/bin/ffmpeg",
       tasks: [
