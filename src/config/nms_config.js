@@ -11,15 +11,15 @@ const nms_config = {
       ping_timeout: 30,
     },
     http: {
-      port: 4002,
+      port: 8882,
       mediaroot: "./lives/media",
       allow_origin: "*",
     },
-    https: {
-      port: 8443,
-      cert: "./certificate.pem",
-      key: "./privatekey.pem",
-    },
+https: {
+	port: 8443,
+	cert: "./certificate.crt",
+	key: "./privatekey.pem",
+},
     trans: {
       ffmpeg: "/usr/bin/ffmpeg",
       tasks: [
