@@ -11,12 +11,12 @@ const nms_config = {
       ping_timeout: 30,
     },
     http: {
-      port: 8882,
+      port: 4002,
       mediaroot: "./lives/media",
       allow_origin: "*",
     },
     https: {
-      port: 4002,
+      port: 8443,
       cert: "./certificate.pem",
       key: "./privatekey.pem",
     },
