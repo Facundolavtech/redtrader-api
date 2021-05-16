@@ -15,11 +15,6 @@ const nms_config = {
       mediaroot: "./lives/media",
       allow_origin: "*",
     },
-    https: {
-      port: 4002,
-      cert: "./certificate.pem",
-      key: "./privatekey.pem",
-    },
     trans: {
       ffmpeg: "/usr/bin/ffmpeg",
       tasks: [

@@ -1,15 +1,9 @@
 const express = require("express");
-const https = require("https");
-const fs = require("fs");
-const key = fs.readFileSync("../privatekey.pem");
-const cert = fs.readFileSync("../certificate.pem");
 const app = express();
 const cors = require("cors");
 const cron = require("node-cron");
 const deletePlan = require("../src/tasks/deletePlan");
 const node_media_server = require("./nms/media_server");
-
-const server = https.createServer({ key: key, cert: cert }, app);
 
 require("./config/database");
 require("dotenv").config();
@@ -39,7 +33,7 @@ module.exports = function () {
   app.use("/api/lives/educator", require("./routes/lives/educator"));
 
   //Run server
-  server.listen(port, () => {
+  app.listen(port, () => {
     console.log(`Server on port ${port}`);
   });
 };
