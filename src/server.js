@@ -5,6 +5,8 @@ const cors = require("cors");
 const cron = require("node-cron");
 const deletePlan = require("../src/tasks/deletePlan");
 const node_media_server = require("./nms/media_server");
+const app = express();
+const port = process.env.PORT || 4001;
 
 require("./config/database");
 require("dotenv").config();
@@ -17,7 +19,6 @@ const options = {
 };
 
 module.exports = function () {
-  const app = express();
   const server = https.createServer(options, app);
 
   node_media_server.run();
@@ -26,7 +27,6 @@ module.exports = function () {
   app.use(express.urlencoded({ extended: true }));
   app.use(express.json({ extended: true }));
   app.use(cors());
-  const port = process.env.PORT || 9443;
 
   cron.schedule("0 * * * *", function () {
     console.log("Deleting expire plans");
@@ -43,7 +43,6 @@ module.exports = function () {
   app.use("/api/lives/streams", require("./routes/lives/streams"));
   app.use("/api/lives/educator", require("./routes/lives/educator"));
 
-  //Run server
   server.listen(port, () => {
     console.log(`Server on port ${port}`);
   });
