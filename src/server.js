@@ -1,4 +1,6 @@
 const express = require("express");
+const https = require("https");
+const fs = require("fs");
 const cors = require("cors");
 const cron = require("node-cron");
 const deletePlan = require("../src/tasks/deletePlan");
@@ -7,20 +9,16 @@ const node_media_server = require("./nms/media_server");
 require("./config/database");
 require("dotenv").config();
 
-const https = require('https');
-const fs = require('fs')
-const key = fs.readFileSync(__dirname + '/../private.key');
-const cert = fs.readFileSync(__dirname + '/../certificate.crt');
+const key = fs.readFileSync(__dirname + "/../private.key");
+const cert = fs.readFileSync(__dirname + "/../certificate.crt");
 const options = {
   key: key,
-  cert: cert
+  cert: cert,
 };
 
-const app = express();
-
-const server = https.createServer(options, app);
-
 module.exports = function () {
+  const app = express();
+  const server = https.createServer(options, app);
 
   node_media_server.run();
 
