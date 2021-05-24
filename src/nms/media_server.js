@@ -5,20 +5,19 @@ const User = require("../models/User");
 nms = new NodeMediaServer(nms_config);
 
 nms.on("prePublish", async (id, StreamPath) => {
-  let stream_key = await getStreamKeyFromStreamPath(StreamPath);
+  const stream_key = await getStreamKeyFromStreamPath(StreamPath);
 
-  User.findOne({ stream_key }, (err, user) => {
+  await User.findOne({ educator_info: { stream_key } }, (err, user) => {
     if (!err) {
-      if (!user.role_educator) {
-        let session = nms.getSession(id);
+      if (!user || !user.roles.educator) {
+        const session = nms.getSession(id);
         session.reject();
       } else {
-        console.log(`Esta transmitiendo: ${user.name}`);
+        console.info(`Nueva transmision en vivo de: ${user.name}`);
       }
     }
   });
 
-  console.log("Node media server:", `id=${id} StreamPath=${StreamPath}`);
   return;
 });
 

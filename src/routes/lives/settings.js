@@ -1,11 +1,14 @@
 const { Router } = require("express");
-const { authMiddleware } = require("../../middlewares/user.middleware");
+const { authMiddleware } = require("../../middlewares/auth.middleware");
 const {
   generateStreamKey,
   getStreamKey,
-} = require("../../controllers/lives/settings");
+} = require("../../controllers/lives/settings.controller");
 
 const router = Router();
+
+//ROUTE
+// api/educator/settings
 
 router.get("/stream_key", authMiddleware, getStreamKey);
 

@@ -1,10 +1,17 @@
 const { Router } = require("express");
-const { getVideos, createVideo } = require("../controllers/academy/videoList");
-const { authMiddleware } = require("../middlewares/user.middleware");
+const {
+  getVideos,
+  createVideo,
+} = require("../controllers/academy/videos.controller");
+const { authMiddleware } = require("../middlewares/auth.middleware");
+const { adminMiddleware } = require("../middlewares/admin.middleware");
 
 const router = Router();
 
+//ROUTE
+// api/videos/
+
 router.get("/", authMiddleware, getVideos);
-router.post("/", authMiddleware, createVideo);
+router.post("/", adminMiddleware, createVideo);
 
 module.exports = router;

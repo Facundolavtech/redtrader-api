@@ -3,7 +3,7 @@ const { hash, compare } = require("bcrypt");
 const short = require("shortid");
 const generateToken = require("../../utils/generateToken");
 
-exports.createUser = async function (req, res) {
+exports.register = async function (req, res) {
   const values = req.body;
 
   const { password, email } = values;
@@ -34,15 +34,18 @@ exports.createUser = async function (req, res) {
       });
     });
   } catch (error) {
+    console.log(error);
     return res.status(500).json({ msg: "Ocurrio un error" });
   }
 };
 
-exports.loginUser = async function (req, res) {
+exports.login = async function (req, res) {
   const data = req.body;
 
+  const { email } = data;
+
   try {
-    const findUser = await User.findOne({ email: data.email });
+    const findUser = await User.findOne({ email });
 
     if (!findUser) {
       return res
@@ -71,14 +74,14 @@ exports.loginUser = async function (req, res) {
   }
 };
 
-exports.authUser = async function (req, res) {
+exports.auth = async function (req, res) {
   const id = req.user.id;
 
   try {
     const findUser = await User.findById(id).select("-password");
 
     if (!findUser) {
-      return res.status(404).send("Ocurrio un error, inicia sesion nuevamente");
+      return res.status(404);
     }
 
     return res.status(200).json(findUser);
@@ -87,53 +90,29 @@ exports.authUser = async function (req, res) {
   }
 };
 
-exports.getUser = async function (req, res) {
-  const id = req.params.id;
-
-  try {
-    const findUser = await User.findById(id);
-
-    if (findUser) {
-      return res.status(200).json(findUser);
-    } else {
-      return res.status(404).json({ msg: "No se encontro el usuario" });
-    }
-  } catch (error) {
-    return res.status(500).json({ msg: "Ocurrio un error" });
-  }
-};
-
 exports.updateUser = async function (req, res) {
   const id = req.params.id;
+  const middlewareId = req.user.id;
   const values = req.body;
 
   try {
+    if (middlewareId !== id) {
+      return res.status(401).send("No tienes permiso para hacer esto");
+    }
+
     const findUser = await User.findById(id);
+
     if (findUser) {
       if (values.password) {
         values.password = await hash(values.password, 10);
       }
       await User.findByIdAndUpdate(id, values);
 
-      return res.status(200).json({ msg: "Usuario actualizado" });
+      return res.status(200);
     } else {
-      return res.status(404).json({ msg: "No se encontro el usuario" });
-    }
-  } catch (error) {
-    return res.status(500).json({ msg: "Ocurrio un error" });
-  }
-};
-
-exports.deleteUser = async function (req, res) {
-  const id = req.params.id;
-
-  try {
-    const findUser = await User.findById(id);
-    if (findUser) {
-      await User.findByIdAndRemove(id);
-      return res.status(200).json({ msg: "Usuario eliminado" });
-    } else {
-      return res.status(404).json({ msg: "No se encontro el usuario" });
+      return res
+        .status(404)
+        .json({ msg: "Ocurrio un error, inicia sesion nuevamente" });
     }
   } catch (error) {
     return res.status(500).json({ msg: "Ocurrio un error" });

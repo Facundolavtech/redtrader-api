@@ -5,7 +5,7 @@ const VideoSchema = new Schema(
     id: { type: Schema.Types.ObjectId },
     title: { type: String, required: true },
     src: { type: String, required: true },
-    openToFreeUsers: { type: Boolean, required: true },
+    unlocked: { type: Boolean, required: true, default: false },
     order: { type: Number, required: true },
   },
   { timestamps: true }

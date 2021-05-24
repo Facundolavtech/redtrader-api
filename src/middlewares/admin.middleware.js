@@ -1,23 +1,22 @@
 const User = require("../models/User");
 
-exports.checkAdmin = async function (req, res, next) {
-  const userId = req.params.id;
+exports.adminMiddleware = async function (req, res, next) {
+  const { id } = req.user;
 
   try {
-    const findUserById = await User.findById(userId);
+    const findUserById = await User.findById(id);
 
     if (!findUserById) {
-      return res.status(404).send("No se encontro un usuario");
+      return res.status(404).json();
     }
 
-    if (findUserById.isSuperAdmin === false) {
+    if (findUserById.roles.admin === false) {
       return res.status(401).send("No tienes permisos para hacer esto");
     }
 
-    req.id = userId;
-
     next();
   } catch (error) {
+    console.log(error);
     return res.status(500).send("Ocurrio un error");
   }
 };

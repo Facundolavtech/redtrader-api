@@ -12,26 +12,22 @@ const nms_config = {
     },
     http: {
       port: 8882,
-      mediaroot: "./lives/media",
       allow_origin: "*",
     },
-    https: {
-	port: 8443,
-	key: "./private.key",
-	cert: "./certificate.crt",
-	passphrase: "",
-    },
     trans: {
-      ffmpeg: "/usr/bin/ffmpeg",
+      ffmpeg: process.env.FFMPEG_PATH,
       tasks: [
         {
           app: "live",
           hls: true,
-          hlsFlags: "[hls_time=2:hls_list_size=3:hls_flags=delete_segments]",
           dash: true,
-          dashFlags: "[f=dash:window_size=3:extra_window_size=5]",
         },
       ],
+    },
+    auth: {
+      api: true,
+      api_user: "admin",
+      api_pass: "lolpbe888",
     },
   },
 };

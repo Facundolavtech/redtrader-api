@@ -1,19 +1,29 @@
 const { Router } = require("express");
-
-const { checkAdmin } = require("../middlewares/admin.middleware");
+const { adminMiddleware } = require("../middlewares/admin.middleware");
 const {
   createCoupon,
   applyCoupon,
-  getAllCoupons,
+  getCoupons,
   deleteCoupon,
 } = require("../controllers/coupons");
-const { authMiddleware } = require("../middlewares/user.middleware");
+const { authMiddleware } = require("../middlewares/auth.middleware");
 
 const router = Router();
 
-router.post("/new/:id", checkAdmin, createCoupon);
-router.delete("/deleteCoupon/:id/:couponId", checkAdmin, deleteCoupon);
+//ROUTE
+// api/coupons/
+
+//Admin Routes
+router.post("/new", authMiddleware, adminMiddleware, createCoupon);
+router.delete(
+  "/deleteCoupon/:couponId",
+  authMiddleware,
+  adminMiddleware,
+  deleteCoupon
+);
+router.get("/getAllCoupons", authMiddleware, adminMiddleware, getCoupons);
+
+//User Route
 router.post("/apply", authMiddleware, applyCoupon);
-router.get("/getAllCoupons", authMiddleware, getAllCoupons);
 
 module.exports = router;

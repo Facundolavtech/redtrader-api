@@ -1,26 +1,15 @@
 const express = require("express");
-const https = require("https");
-const fs = require("fs");
 const cors = require("cors");
 const cron = require("node-cron");
-const deletePlan = require("../src/tasks/deletePlan");
+const RemoveExpiredPlans = require("./tasks/RemoveExpiredPlans");
 const node_media_server = require("./nms/media_server");
 const app = express();
-const port = process.env.PORT || 4001;
+const port = process.env.PORT || 4000;
 
 require("./config/database");
 require("dotenv").config();
 
-const key = fs.readFileSync(__dirname + "/../private.key");
-const cert = fs.readFileSync(__dirname + "/../certificate.crt");
-const options = {
-  key: key,
-  cert: cert,
-};
-
 module.exports = function () {
-  const server = https.createServer(options, app);
-
   node_media_server.run();
 
   //Middlewares
@@ -29,21 +18,43 @@ module.exports = function () {
   app.use(cors());
 
   cron.schedule("0 * * * *", function () {
-    console.log("Deleting expire plans");
-    deletePlan();
+    //Every 1 hour
+    console.log("CRON: Deleting expired plans");
+    RemoveExpiredPlans();
   });
 
   //Routes
-  app.use("/api/users", require("./routes/users"));
-  app.use("/api/videos", require("./routes/videos"));
-  app.use("/payhook", require("./routes/payhook"));
-  app.use("/api/pays", require("./routes/pays"));
-  app.use("/api/coupons", require("./routes/coupons"));
-  app.use("/api/educator/settings", require("./routes/lives/settings"));
-  app.use("/api/lives/streams", require("./routes/lives/streams"));
-  app.use("/api/lives/educator", require("./routes/lives/educator"));
 
-  server.listen(port, () => {
+  //Auth Routes
+  app.use("/api/users/auth", require("./routes/Users/auth"));
+
+  //Admin Routes
+  app.use("/api/admin", require("./routes/Users/Admin"));
+
+  //Confirm account & Reset Password Routes
+  app.use("/api/users/confirm", require("./routes/Users/confirm"));
+  app.use("/api/users/password", require("./routes/Users/password"));
+
+  //Update plan Routes
+  app.use("/api/users/plan", require("./routes/Users/plan"));
+
+  //Videos Routes
+  app.use("/api/videos", require("./routes/videos"));
+
+  //Coupons Routes
+  app.use("/api/coupons", require("./routes/coupons"));
+
+  //Payments Routes
+  app.use("/api/payments", require("./routes/payments"));
+
+  //Educator Route
+  app.use("/api/educator/settings", require("./routes/Lives/settings"));
+
+  //Lives Routes
+  app.use("/api/lives/streams", require("./routes/Lives/streams"));
+  app.use("/api/lives/educator", require("./routes/Lives/educator"));
+
+  app.listen(port, () => {
     console.log(`Server on port ${port}`);
   });
 };

@@ -2,10 +2,11 @@ const Coupon = require("../../models/Coupon");
 const User = require("../../models/User");
 
 exports.createCoupon = async function (req, res) {
-  const data = req.body;
-
   try {
-    const findCoupon = await Coupon.findOne({ coupon_name: data.coupon_name });
+    const data = req.body;
+    const { coupon_name } = data;
+
+    const findCoupon = await Coupon.findOne({ coupon_name });
 
     if (findCoupon) {
       return res.status(400).json("Ya existe un cupon con ese nombre");
@@ -15,7 +16,7 @@ exports.createCoupon = async function (req, res) {
 
     await newCoupon.save();
 
-    return res.status(200).json("Cupon creado con exito");
+    return res.status(200).json("Cupon creado");
   } catch (error) {
     return res.status(500).send("Ocurrio un error");
   }
@@ -24,9 +25,16 @@ exports.createCoupon = async function (req, res) {
 exports.deleteCoupon = async function (req, res) {
   try {
     const couponId = req.params.couponId;
-    await Coupon.findByIdAndRemove(couponId);
 
-    return res.status(200).json("Cupon eliminado con exito");
+    const findCoupon = await Coupon.findById(couponId);
+
+    if (!findCoupon) {
+      return res.status(404).send("El cupon no existe");
+    } else {
+      findCoupon.delete().then(() => {
+        return res.status(200).json("Cupon eliminado");
+      });
+    }
   } catch (error) {
     return res.status(500).send("Ocurrio un error");
   }
@@ -34,13 +42,13 @@ exports.deleteCoupon = async function (req, res) {
 
 exports.applyCoupon = async function (req, res) {
   try {
-    const id = req.user.id;
+    const { id } = req.user;
     const { coupon_name } = req.body;
 
     const findUserById = await User.findById(id);
 
     if (!findUserById) {
-      return res.status(404).json("Debes iniciar sesion para continuar");
+      return res.status(404).json("Inicia sesion para continuar");
     }
 
     if (findUserById.discount.active === true) {
@@ -69,7 +77,7 @@ exports.applyCoupon = async function (req, res) {
   }
 };
 
-exports.getAllCoupons = async function (req, res) {
+exports.getCoupons = async function (req, res) {
   try {
     const coupons = await Coupon.find({}).sort({ createdAt: "desc" });
 
