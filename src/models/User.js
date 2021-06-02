@@ -9,9 +9,9 @@ const UserSchema = new Schema(
     confirmed: { type: Boolean, default: false },
     roles: {
       type: {
-        educator: { type: Boolean, default: false },
-        admin: { type: Boolean, default: false },
-        user: { type: Boolean, default: true },
+        educator: { type: Boolean },
+        admin: { type: Boolean },
+        user: { type: Boolean },
       },
       default: {
         educator: false,
@@ -21,20 +21,18 @@ const UserSchema = new Schema(
     },
     plan: {
       type: {
-        active: { type: Boolean, default: false },
+        active: { type: Boolean },
         plan_type: {
           type: {
-            premium: { type: Boolean, default: false },
-            premium_plus: { type: Boolean, default: false },
+            premium: { type: Boolean },
+            premium_plus: { type: Boolean },
           },
         },
         expire: {
           type: Date,
-          default: null,
         },
         txn_id: {
           type: String,
-          default: null,
         },
       },
       default: {
@@ -52,20 +50,18 @@ const UserSchema = new Schema(
       type: {
         stream_key: { type: String },
         educator_thumb: { type: String },
-        educator_socials: {
-          type: {
-            instagram: { type: String },
-            facebook: { type: String },
-          },
-        },
       },
-      default: null,
+      default: {
+        stream_key: null,
+        educator_thumb: null,
+      },
     },
+    stream_pw: { type: String },
     discount: {
       type: {
-        active: { type: Boolean, default: false },
-        percent: { type: Number, default: 0 },
-        coupon_name: { type: String, default: null },
+        active: { type: Boolean },
+        percent: { type: Number },
+        coupon_name: { type: String },
       },
       default: {
         active: false,
@@ -74,7 +70,7 @@ const UserSchema = new Schema(
       },
     },
   },
-  { timestamps: true }
+  { timestamps: true, versionKey: false }
 );
 
 module.exports = model("User", UserSchema);

@@ -9,22 +9,26 @@ const router = Router();
 // api/payments/
 
 router.post("/create", authMiddleware, createPayment);
-router.post("/hook", async (req, res) => {
+router.post("/hook/:plan", async (req, res) => {
   const { txn_id, email, status } = req.body;
+
+  const { plan } = req.params;
 
   console.info(`New payment status: TXN: ${txn_id}, Status: ${status}`);
 
   if (status == 100) {
     try {
-      await updatePlanFn(email, txn_id).then((res) => {
+      await updatePlanFn(email, txn_id, plan).then((res) => {
         if (res.status !== 200) {
-          return console.error("Error in payment: ", txn_id, email, res.msg);
+          console.error("Error in payment: ", txn_id, email, res.msg);
         } else {
-          return console.info("Successfully payment: ", txn_id, email);
+          console.info("Successfully payment: ", txn_id, email);
         }
       });
+      return res.status(200).json();
     } catch (error) {
-      return console.error("Payhook error: ", error);
+      console.error("Payhook error: ", error);
+      return res.status(500).json();
     }
   }
 });

@@ -4,12 +4,21 @@ const User = require("../models/User");
 
 nms = new NodeMediaServer(nms_config);
 
-nms.on("prePublish", async (id, StreamPath) => {
-  const stream_key = await getStreamKeyFromStreamPath(StreamPath);
+nms.on("donePublish", (id, StreamPath, args) => {
+  console.log(
+    "[NodeEvent on donePublish]",
+    `id=${id} StreamPath=${StreamPath} args=${JSON.stringify(args)}`
+  );
+});
 
-  await User.findOne({ educator_info: { stream_key } }, (err, user) => {
+nms.on("prePublish", async (id, StreamPath, params) => {
+  await User.findOne({ stream_pw: params.stream_pw }, (err, user) => {
     if (!err) {
-      if (!user || !user.roles.educator) {
+      if (
+        !user ||
+        user.stream_pw !== params.stream_pw ||
+        !user.roles.educator
+      ) {
         const session = nms.getSession(id);
         session.reject();
       } else {
@@ -20,10 +29,5 @@ nms.on("prePublish", async (id, StreamPath) => {
 
   return;
 });
-
-const getStreamKeyFromStreamPath = (path) => {
-  let parts = path.split("/");
-  return parts[parts.length - 1];
-};
 
 module.exports = nms;

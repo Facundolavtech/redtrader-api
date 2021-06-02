@@ -81,7 +81,7 @@ exports.getCoupons = async function (req, res) {
   try {
     const coupons = await Coupon.find({}).sort({ createdAt: "desc" });
 
-    return res.status(200).json({ coupons });
+    return res.status(200).json(coupons);
   } catch (error) {
     return res.status(500).send("Ocurrio un error");
   }

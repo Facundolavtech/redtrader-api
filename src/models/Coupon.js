@@ -7,6 +7,7 @@ const CouponSchema = new Schema(
   },
   {
     timestamps: true,
+    versionKey: false,
   }
 );
 

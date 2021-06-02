@@ -2,10 +2,10 @@ const User = require("../models/User");
 
 module.exports = async function () {
   try {
-    let date = new Date().toISOString();
+    let date = new Date();
 
     await User.updateMany(
-      { "plan.expire": { $lte: date } },
+      { "plan.expire": { $lte: date.setDate(date.getDate()) } },
       {
         $set: {
           plan: {

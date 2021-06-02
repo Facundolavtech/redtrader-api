@@ -1,18 +1,19 @@
 const User = require("../../models/User");
 const Coinpayments = require("coinpayments");
 require("dotenv").config();
+const plans = require("../../helpers/Plans");
+const calculateDiscount = require("../../utils/calculateDiscount");
 
 const coinpayments_client = new Coinpayments({
   key: process.env.CP_CLIENT_KEY,
   secret: process.env.CP_CLIENT_SECRET,
 });
 
-const ipn_url = process.env.IPN_URL || "http://localhost:4000/payments/hook";
 const client_url = process.env.CLIENT_URL || "http://localhost:3000";
 
 exports.createPayment = async function (req, res) {
   const { id } = req.user;
-  const { amount, currency, plan_name } = req.body;
+  const { currency, plan_name, discount } = req.body;
 
   try {
     const findUserById = await User.findById(id);
@@ -21,12 +22,32 @@ exports.createPayment = async function (req, res) {
       return res.status(404).send("Ocurrio un error, intenta nuevamente");
     }
 
-    const { email, name } = findUserById;
+    const { email, name, first_month_payed } = findUserById;
+
+    if (typeof plans.find((plan) => plan.name === plan_name) === "undefined") {
+      return res.status(400).json("Ocurrio un error al crear el link de pago");
+    }
+
+    let amount = null;
+    let ipn_url;
+
+    for (plan of plans) {
+      if (plan.name === plan_name) {
+        if (first_month_payed)
+          amount = calculateDiscount(plan.monthly, discount);
+        else amount = calculateDiscount(plan.first_month, discount);
+        ipn_url = plan.ipn;
+      }
+    }
+
+    if (amount === null) {
+      return res.status(400).json("Ocurrio un error al crear el link de pago");
+    }
 
     const options = {
       currency1: "USD",
       currency2: currency,
-      amount: amount,
+      amount,
       buyer_email: email,
       buyer_name: name,
       item_name: plan_name,
@@ -35,11 +56,13 @@ exports.createPayment = async function (req, res) {
       cancel_url: `${client_url}/dashboard/checkout`,
     };
 
+    console.log(options);
+
     await coinpayments_client.createTransaction(options, (err, response) => {
       if (err)
         return res
           .status(400)
-          .send("Ocurrio un error al intentar crear la factura");
+          .json("Ocurrio un error al intentar crear el link de pago");
 
       return res.status(200).json(response);
     });

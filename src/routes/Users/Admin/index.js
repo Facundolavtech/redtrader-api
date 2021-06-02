@@ -17,6 +17,11 @@ const { authMiddleware } = require("../../../middlewares/auth.middleware");
 router.put("/updatePlan", authMiddleware, adminMiddleware, updatePlanAdmin);
 router.put("/updateAdmin", authMiddleware, adminMiddleware, updateAdmin);
 router.put("/updateEducator", authMiddleware, adminMiddleware, updateEducator);
-router.delete("/deleteAccount", authMiddleware, adminMiddleware, deleteAccount);
+router.delete(
+  "/deleteAccount/:email",
+  authMiddleware,
+  adminMiddleware,
+  deleteAccount
+);
 
 module.exports = router;

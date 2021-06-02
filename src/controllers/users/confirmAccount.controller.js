@@ -54,7 +54,7 @@ exports.confirm = async function (req, res) {
     const findUserById = await User.findById(id);
 
     if (!findUserById) {
-      return res.status(404).send("No se encontro un usuario");
+      return res.status(404).json("No se encontro un usuario");
     }
 
     const findToken = await ConfirmAccountToken.findOne({ token });
@@ -62,16 +62,16 @@ exports.confirm = async function (req, res) {
     if (!findToken) {
       return res
         .status(404)
-        .send(
-          "El token para confirmar la cuenta no existe o expiro, porfavor vuelve a enviar nuevamente el correo"
+        .json(
+          "El token de confirmacion no existe o expiro, vuelve a enviar el correo"
         );
     }
 
     if (findToken.userId != id) {
       return res
         .status(401)
-        .send(
-          "El token para confirmar la cuenta no existe o expiro, porfavor vuelve a enviar nuevamente el correo"
+        .json(
+          "El token de confirmacion no existe o expiro, vuelve a enviar el correo"
         );
     }
 

@@ -20,16 +20,24 @@ exports.getStreams = async function (req, res) {
 
     const streams = JSON.parse(req.query.streams);
 
-    const lives = Object.keys(streams.live);
+    const lives = Object.keys(streams);
 
-    const users = await User.find({
-      "educator_info.stream_key": { $in: lives },
-    }).select(
-      "-password -educator_info.stream_key -discount -roles -first_month_payed -plan -createdAt -updatedAt -confirmed -_id"
-    );
+    if (lives.includes("live")) {
+      const livesList = Object.keys(streams.live);
 
-    return res.status(200).json(users);
+      const users = await User.find({
+        "educator_info.stream_key": {
+          $in: livesList,
+        },
+      }).select(
+        "-password -stream_pw -discount -roles -first_month_payed -plan -createdAt -updatedAt -confirmed -_id"
+      );
+
+      return res.status(200).json(users);
+    } else {
+      return res.status(200).json({ streams: [] });
+    }
   } catch (error) {
-    return res.status(500).json(error);
+    return res.status(500).json("Ocurrio un error");
   }
 };

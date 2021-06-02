@@ -50,7 +50,7 @@ exports.login = async function (req, res) {
     if (!findUser) {
       return res
         .status(404)
-        .send("No se encontro un usuario registrado con esas credenciales");
+        .json("No se encontro un usuario registrado con esas credenciales");
     }
 
     const comparePasswords = await compare(data.password, findUser.password);
@@ -58,7 +58,7 @@ exports.login = async function (req, res) {
     if (!comparePasswords) {
       return res
         .status(401)
-        .send("Datos incorrectos, comprueba tu correo o tu contraseña");
+        .json("Datos incorrectos, comprueba tu correo o tu contraseña");
     }
 
     const tokenPayload = {
@@ -67,10 +67,10 @@ exports.login = async function (req, res) {
     };
 
     generateToken(tokenPayload).then((token) => {
-      return res.status(200).json({ msg: "Logueado con exito", token });
+      return res.status(200).json({ token });
     });
   } catch (error) {
-    return res.status(500).json({ msg: "Ocurrio un error" });
+    return res.status(500).json("Ocurrio un error");
   }
 };
 
@@ -81,39 +81,10 @@ exports.auth = async function (req, res) {
     const findUser = await User.findById(id).select("-password");
 
     if (!findUser) {
-      return res.status(404);
+      return res.status(404).json();
     }
 
     return res.status(200).json(findUser);
-  } catch (error) {
-    return res.status(500).json({ msg: "Ocurrio un error" });
-  }
-};
-
-exports.updateUser = async function (req, res) {
-  const id = req.params.id;
-  const middlewareId = req.user.id;
-  const values = req.body;
-
-  try {
-    if (middlewareId !== id) {
-      return res.status(401).send("No tienes permiso para hacer esto");
-    }
-
-    const findUser = await User.findById(id);
-
-    if (findUser) {
-      if (values.password) {
-        values.password = await hash(values.password, 10);
-      }
-      await User.findByIdAndUpdate(id, values);
-
-      return res.status(200);
-    } else {
-      return res
-        .status(404)
-        .json({ msg: "Ocurrio un error, inicia sesion nuevamente" });
-    }
   } catch (error) {
     return res.status(500).json({ msg: "Ocurrio un error" });
   }

@@ -26,7 +26,6 @@ exports.getVideos = async function (req, res) {
       });
       return res.status(200).json(filterVideoList);
     }
-    return res.status(200).json(videoList);
   } catch (error) {
     return res.status(500).json({ msg: "Ocurrio un error" });
   }

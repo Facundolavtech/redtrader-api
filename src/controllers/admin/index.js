@@ -19,7 +19,7 @@ exports.updatePlanAdmin = async function (req, res) {
             active: true,
             txn_id: null,
             expire: expireDate,
-            plan_type: { premium: true, premium_plus: false },
+            plan_type: { premium: true, premium_plus: true },
           },
         }
       );
@@ -87,7 +87,7 @@ exports.updateAdmin = async function (req, res) {
 };
 
 exports.deleteAccount = async function (req, res) {
-  const { email } = req.body;
+  const { email } = req.params;
 
   try {
     const findUserByEmail = await User.findOne({ email });
@@ -105,9 +105,8 @@ exports.deleteAccount = async function (req, res) {
 };
 
 exports.updateEducator = async function (req, res) {
-  const { email, active } = req.body;
-
   try {
+    const { email, active } = req.body;
     const findUserByEmail = await User.findOne({ email });
 
     if (!findUserByEmail) {
@@ -115,32 +114,39 @@ exports.updateEducator = async function (req, res) {
     }
 
     let stream_key;
+    let stream_pw;
 
-    if (active) stream_key = await shortid.generate();
-    else stream_key = null;
+    if (active) {
+      stream_key = await shortid.generate();
+      stream_pw = await shortid.generate();
+    } else {
+      stream_key = null;
+      stream_pw = null;
+    }
 
-    await User.findOneAndUpdate(
-      { email },
-      {
-        roles: {
-          educator: active,
-          admin: findUserByEmail.roles.admin,
-          user: findUserByEmail.roles.user,
-        },
-        plan: {
-          active,
-          plan_type: { premium: active, premium_plus: active },
-          txn_id: null,
-          expire: null,
-        },
-        educator_info: {
-          stream_key,
-        },
-      }
-    );
+    const dataToUpdate = {
+      roles: {
+        educator: active,
+        admin: findUserByEmail.roles.admin,
+        user: findUserByEmail.roles.user,
+      },
+      plan: {
+        active,
+        plan_type: { premium: true, premium_plus: true },
+        txn_id: null,
+        expire: null,
+      },
+      educator_info: {
+        stream_key,
+        educator_thumb: "",
+      },
+      stream_pw,
+    };
+
+    await User.findOneAndUpdate({ email }, dataToUpdate);
 
     return res.status(200).json("Educador actualizado");
   } catch (error) {
-    return res.status(500).send("Ocurrio un error");
+    return res.status(500).json(error);
   }
 };
