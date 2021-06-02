@@ -21,7 +21,8 @@ const nms_config = {
     https: {
       port: 8443,
       key: './private.key',
-      cert:'./www_redtrader-api_com.crt'
+      cert:'./certificate.crt',
+      passphrase: ""
     },
     auth: {
       play: true,
