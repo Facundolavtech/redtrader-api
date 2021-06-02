@@ -18,12 +18,6 @@ const nms_config = {
       mediaroot: "./lives/media",
       allow_origin: "*",
     },
-    https: {
-      port: 8443,
-      key: './private.key',
-      cert:'./certificate.crt',
-      passphrase: ""
-    },
     auth: {
       play: true,
       api: true,

@@ -13,6 +13,7 @@ require("dotenv").config();
 
 const key = fs.readFileSync(__dirname + "/../private.key");
 const cert = fs.readFileSync(__dirname + "/../www_redtrader-api_com.crt");
+
 const options = {
   key: key,
   cert: cert,
