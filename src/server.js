@@ -1,7 +1,7 @@
 const express = require("express");
 const app = express();
-const http = require("http");
-const server = http.createServer(app);
+const https = require("https");
+const fs = require('fs');
 const cors = require("cors");
 const cron = require("node-cron");
 const RemoveExpiredPlans = require("./tasks/RemoveExpiredPlans");
@@ -9,6 +9,13 @@ const node_media_server = require("./nms/media_server");
 const port = process.env.PORT || 4000;
 require("./config/database");
 require("dotenv").config();
+
+const options = {
+  key: fs.readFileSync('./private.key'),
+  cert: fs.readFileSync('./www_redtrader-api_com.crt')
+};
+
+const server = https.createServer(options);
 
 const public_url =
   process.env.NODE_ENV == "production"

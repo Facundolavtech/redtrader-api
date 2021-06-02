@@ -14,9 +14,14 @@ const nms_config = {
       ping_timeout: 30,
     },
     http: {
-      port: 8443,
+      port: 8882,
       mediaroot: "./lives/media",
       allow_origin: "*",
+    },
+    https: {
+      port: 8443,
+      key: './private.key',
+      cert:'./www_redtrader-api_com.crt'
     },
     auth: {
       play: true,
