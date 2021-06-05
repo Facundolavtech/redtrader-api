@@ -18,10 +18,16 @@ const nms_config = {
       mediaroot: "./lives/media",
       allow_origin: "*",
     },
+    https: {
+      port: 8443,
+      key: './private.key',
+      cert:'./www_redtrader-api_com.crt',
+      passphrase: "",
+    },
     auth: {
       play: true,
       api: true,
-      publish: true,
+      publish: false,
       secret: "redtraderNMS2021",
       api_user: "nms_admin",
       api_pass: "lolpbe888",
