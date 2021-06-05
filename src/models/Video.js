@@ -8,7 +8,7 @@ const VideoSchema = new Schema(
     unlocked: { type: Boolean, required: true, default: false },
     order: { type: Number, required: true },
   },
-  { timestamps: true, versionKey: false }
+  { timestamps: true }
 );
 
 module.exports = model("Video", VideoSchema);

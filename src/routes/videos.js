@@ -12,6 +12,6 @@ const router = Router();
 // api/videos/
 
 router.get("/", authMiddleware, getVideos);
-router.post("/", adminMiddleware, createVideo);
+router.post("/", authMiddleware, adminMiddleware, createVideo);
 
 module.exports = router;
