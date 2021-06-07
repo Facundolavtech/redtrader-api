@@ -11,6 +11,16 @@ const port = process.env.PORT || 4000;
 require("./config/database");
 require("dotenv").config();
 
+const key = fs.readFileSync(__dirname + "/../private.key");
+const cert = fs.readFileSync(__dirname + "/../www_redtrader-api_com.crt");
+
+const options = {
+  key: key,
+  cert: cert,
+};
+
+const server = https.createServer(options, app);
+
 const public_url =
   process.env.NODE_ENV == "production"
     ? "https://redtrader-api.com:9443"

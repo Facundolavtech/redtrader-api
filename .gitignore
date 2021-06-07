@@ -1,2 +1,8 @@
 node_modules
 .env
+certificate.csr
+SectigoRSADomainValidationSecureServerCA.crt
+USERTrustRSAAAACA.crt
+www_redtrader-api_com.crt
+ca_bundle.crt
+AAACertificateServices.crt

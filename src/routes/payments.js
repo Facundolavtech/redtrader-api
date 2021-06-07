@@ -12,6 +12,8 @@ router.post("/create", authMiddleware, createPayment);
 router.post("/hook/:plan", async (req, res) => {
   const { txn_id, email, status } = req.body;
 
+  console.log(txn_id, email, status);
+
   const { plan } = req.params;
 
   console.info(`New payment status: TXN: ${txn_id}, Status: ${status}`);
