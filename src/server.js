@@ -1,7 +1,8 @@
 const express = require("express");
 const app = express();
 const http = require("http");
-const server = http.createServer(app);
+const fs = require("fs");
+const https = require("https");
 const cors = require("cors");
 const cron = require("node-cron");
 const RemoveExpiredPlans = require("./tasks/RemoveExpiredPlans");
@@ -17,9 +18,23 @@ const public_url =
 
 const io = require("socket.io")(server, {
   cors: {
-    origin: public_url,
+    origin: [public_url],
   },
 });
+
+let server;
+
+if (process.env.NODE_ENV === "production") {
+  server = https.createServer(
+    {
+      key: fs.readFileSync(__dirname + "/../private.key"),
+      cert: fs.readFileSync(__dirname + "/../www_redtrader-api_com.crt"),
+    },
+    app
+  );
+} else {
+  server = http.createServer(app);
+}
 
 const corsOptions = {
   origin: process.env.CLIENT_URL,
@@ -126,6 +141,15 @@ module.exports = function () {
     "/api/lives/educator",
     cors(corsOptions),
     require("./routes/Lives/educator")
+  );
+
+  // //Signals Routes
+  app.use("/api/signals", cors(corsOptions), require("./routes/Signals"));
+
+  app.use(
+    "/api/users/notifications",
+    cors(corsOptions),
+    require("./routes/Notifications")
   );
 
   server.listen(port, () => {

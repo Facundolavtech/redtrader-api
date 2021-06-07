@@ -56,8 +56,6 @@ exports.createPayment = async function (req, res) {
       cancel_url: `${client_url}/dashboard/checkout`,
     };
 
-    console.log(options);
-
     await coinpayments_client.createTransaction(options, (err, response) => {
       if (err)
         return res
@@ -67,6 +65,6 @@ exports.createPayment = async function (req, res) {
       return res.status(200).json(response);
     });
   } catch (error) {
-    console.error(error);
+    return res.status(500).json("Ocurrio un error");
   }
 };

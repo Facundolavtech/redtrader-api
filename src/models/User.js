@@ -69,6 +69,7 @@ const UserSchema = new Schema(
         coupon_name: null,
       },
     },
+    notifications_token: { type: Array },
   },
   { timestamps: true, versionKey: false }
 );

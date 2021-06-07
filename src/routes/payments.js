@@ -30,6 +30,8 @@ router.post("/hook/:plan", async (req, res) => {
       console.error("Payhook error: ", error);
       return res.status(500).json();
     }
+  } else {
+    return res.status(202).json();
   }
 });
 
