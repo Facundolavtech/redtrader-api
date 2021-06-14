@@ -16,14 +16,23 @@ const public_url =
     : "http://localhost:4000";
 
 // Certificate
-const key = fs.readFileSync('/etc/letsencrypt/live/redtrader-api.com/privkey.pem', 'utf8');
-const cert = fs.readFileSync('/etc/letsencrypt/live/redtrader-api.com/cert.pem', 'utf8');
-const ca = fs.readFileSync('/etc/letsencrypt/live/redtrader-api.com/chain.pem', 'utf8');
+const key = fs.readFileSync(
+  "/etc/letsencrypt/live/redtrader-api.com/privkey.pem",
+  "utf8"
+);
+const cert = fs.readFileSync(
+  "/etc/letsencrypt/live/redtrader-api.com/cert.pem",
+  "utf8"
+);
+const ca = fs.readFileSync(
+  "/etc/letsencrypt/live/redtrader-api.com/chain.pem",
+  "utf8"
+);
 
 const credentials = {
   key,
   cert,
-  ca
+  ca,
 };
 
 // Starting both http & https servers
@@ -36,8 +45,7 @@ const io = require("socket.io")(httpsServer, {
   },
 });
 
-let whitelist = [
-  "https://www.redtraderacademy.com"];
+let whitelist = ["https://www.redtraderacademy.com"];
 let corsOptions = {
   origin: function (origin, callback) {
     if (whitelist.indexOf(origin) !== -1 || !origin) {
@@ -98,11 +106,12 @@ module.exports = function () {
   app.use("/api/users/auth", cors(corsOptions), require("./routes/Users/auth"));
 
   //Admin Routes
-  app.use("/api/admin",cors(corsOptions), require("./routes/Users/Admin"));
+  app.use("/api/admin", cors(corsOptions), require("./routes/Users/Admin"));
 
   //Confirm account & Reset Password Routes
   app.use(
-    "/api/users/confirm", cors(corsOptions),
+    "/api/users/confirm",
+    cors(corsOptions),
     require("./routes/Users/confirm")
   );
   app.use(
@@ -110,8 +119,6 @@ module.exports = function () {
     cors(corsOptions),
     require("./routes/Users/password")
   );
-  app.use("/api/users/confirm",cors(corsOptions) require("./routes/Users/confirm"));
-  app.use("/api/users/password",cors(corsOptions) require("./routes/Users/password"));
 
   //Change password Route
   app.use(
@@ -121,10 +128,10 @@ module.exports = function () {
   );
 
   //Update plan Routes
-  app.use("/api/users/plan",cors(corsOptions), require("./routes/Users/plan"));
+  app.use("/api/users/plan", cors(corsOptions), require("./routes/Users/plan"));
 
   //Videos Routes
-  app.use("/api/videos",cors(corsOptions), require("./routes/videos"));
+  app.use("/api/videos", cors(corsOptions), require("./routes/videos"));
 
   //Coupons Routes
   app.use("/api/coupons", cors(corsOptions), require("./routes/coupons"));
@@ -142,17 +149,17 @@ module.exports = function () {
   //Lives Routes
   app.use(
     "/api/lives/streams",
-   cors(corsOptions), 
-   require("./routes/Lives/streams")
+    cors(corsOptions),
+    require("./routes/Lives/streams")
   );
   app.use(
     "/api/lives/educator",
     cors(corsOptions),
     require("./routes/Lives/educator")
   );
-  
+
   // //Signals Routes
-  app.use("/api/signals",cors(corsOptions), require("./routes/Signals"));
+  app.use("/api/signals", cors(corsOptions), require("./routes/Signals"));
   app.use(
     "/api/users/notifications",
     cors(corsOptions),
@@ -160,10 +167,10 @@ module.exports = function () {
   );
 
   httpServer.listen(8080, () => {
-    console.log('HTTP server on port 8080');
+    console.log("HTTP server on port 8080");
   });
 
   httpsServer.listen(9443, () => {
-    console.log('HTTPS server on port 9443')
-  })
+    console.log("HTTPS server on port 9443");
+  });
 };
