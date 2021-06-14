@@ -1,13 +1,12 @@
 const express = require("express");
 const app = express();
-const http = require("http");
 const fs = require("fs");
+const http = require("http");
 const https = require("https");
 const cors = require("cors");
 const cron = require("node-cron");
 const RemoveExpiredPlans = require("./tasks/RemoveExpiredPlans");
 const node_media_server = require("./nms/media_server");
-const port = process.env.PORT || 4000;
 require("./config/database");
 require("dotenv").config();
 
@@ -16,37 +15,26 @@ const public_url =
     ? "https://redtrader-api.com:9443"
     : "http://localhost:4000";
 
-let server;
+// Certificate
+const key = fs.readFileSync('/etc/letsencrypt/live/redtrader-api.com/privkey.pem', 'utf8');
+const cert = fs.readFileSync('/etc/letsencrypt/live/redtrader-api.com/cert.pem', 'utf8');
+const ca = fs.readFileSync('/etc/letsencrypt/live/redtrader-api.com/chain.pem', 'utf8');
 
-if (process.env.NODE_ENV === "production") {
-  server = https.createServer(
-    {
-      key: fs.readFileSync(__dirname + "/../private.key"),
-      cert: fs.readFileSync(__dirname + "/../www_redtrader-api_com.crt"),
-    },
-    app
-  );
-} else {
-  server = http.createServer(app);
-}
+const credentials = {
+  key,
+  cert,
+  ca
+};
 
-const io = require("socket.io")(server, {
+// Starting both http & https servers
+const httpServer = http.createServer(app);
+const httpsServer = https.createServer(credentials, app);
+
+const io = require("socket.io")(httpsServer, {
   cors: {
     origin: [public_url],
   },
 });
-
-let whitelist = ['https://www.redtraderacademy.com', 'exp://g9-c55.facuh1999.redtrader-mobile.exp.direct:80'];
-let corsOptions = {
-  origin: function (origin, callback) {
-    if (whitelist.indexOf(origin) !== -1 || !origin) {
-      callback(null, true)
-    } else {
-      callback(new Error('Not allowed by CORS'))
-    }
-  },
-  allowedHeaders: ["*"],
-};
 
 module.exports = function () {
   node_media_server.run();
@@ -54,7 +42,13 @@ module.exports = function () {
   //Middlewares
   app.use(express.urlencoded({ extended: true }));
   app.use(express.json({ extended: true }));
-  app.use(cors());
+
+  let whitelist = ['https://www.redtraderacademy.com'];
+  let corsOptions = {
+  origin: '*',
+  methods: '*',
+  allowedHeaders: '*'
+};
 
   cron.schedule("0 * * * *", function () {
     //Every 1 hour
@@ -95,64 +89,74 @@ module.exports = function () {
   //Routes
 
   //Auth Routes
-  app.use("/api/users/auth", require("./routes/Users/auth"));
+  app.use("/api/users/auth", cors(corsOptions), require("./routes/Users/auth"));
 
   //Admin Routes
-  app.use("/api/admin", require("./routes/Users/Admin"));
+  app.use("/api/admin",cors(corsOptions), require("./routes/Users/Admin"));
 
   //Confirm account & Reset Password Routes
   app.use(
-    "/api/users/confirm",
+    "/api/users/confirm", cors(corsOptions),
     require("./routes/Users/confirm")
   );
   app.use(
     "/api/users/password",
+    cors(corsOptions),
     require("./routes/Users/password")
   );
 
   //Change password Route
   app.use(
     "/api/users/changePassword",
+    cors(corsOptions),
     require("./routes/Users/changePassword")
   );
 
   //Update plan Routes
-  app.use("/api/users/plan", require("./routes/Users/plan"));
+  app.use("/api/users/plan",cors(corsOptions), require("./routes/Users/plan"));
 
   //Videos Routes
-  app.use("/api/videos", require("./routes/videos"));
+  app.use("/api/videos",cors(corsOptions), require("./routes/videos"));
 
   //Coupons Routes
-  app.use("/api/coupons", require("./routes/coupons"));
+  app.use("/api/coupons", cors(corsOptions), require("./routes/coupons"));
 
   //Payments Routes
-  app.use("/api/payments", require("./routes/payments"));
+  app.use("/api/payments", cors(corsOptions), require("./routes/payments"));
 
   //Educator Route
   app.use(
     "/api/educator/settings",
+    cors(corsOptions),
     require("./routes/Lives/settings")
   );
 
   //Lives Routes
   app.use(
     "/api/lives/streams",
-    require("./routes/Lives/streams")
+   cors(corsOptions), 
+   require("./routes/Lives/streams")
   );
   app.use(
     "/api/lives/educator",
+    cors(corsOptions),
     require("./routes/Lives/educator")
   );
 
   // //Signals Routes
-  app.use("/api/signals", require("./routes/Signals"));
+  app.use("/api/signals",cors(corsOptions), require("./routes/Signals"));
 
   app.use(
     "/api/users/notifications",
+    cors(corsOptions),
     require("./routes/Notifications")
   );
 
-  server.listen(port, () => {
-    console.log(`Server on port ${port}`);
+  httpServer.listen(8080, () => {
+    console.log('HTTP server on port 8080');
   });
+
+  httpsServer.listen(9443, () => {
+    console.log('HTTPS server on port 9443')
+  })
 };

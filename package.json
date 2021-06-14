@@ -20,6 +20,7 @@
     "md5": "^2.3.0",
     "mongoose": "^5.12.3",
     "node-cron": "^3.0.0",
+    "node-fetch": "^2.6.1",
     "node-media-server": "^2.2.5",
     "nodemailer": "^6.5.0",
     "shortid": "^2.2.16",

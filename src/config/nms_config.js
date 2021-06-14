@@ -23,14 +23,14 @@ if (process.env.NODE_ENV === "production") {
       },
       https: {
         port: 8443,
-        key: "./private.key",
-        cert: "./www_redtrader-api_com.crt",
+        key: "/etc/letsencrypt/live/redtrader-api.com/privkey.pem",
+        cert: "/etc/letsencrypt/live/redtrader-api.com/cert.pem",
         passphrase: "",
       },
       auth: {
         play: true,
         api: true,
-        publish: true,
+        publish: false,
         secret: "redtraderNMS2021",
         api_user: "nms_admin",
         api_pass: "lolpbe888",

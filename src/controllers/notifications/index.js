@@ -1,7 +1,11 @@
 const User = require("../../models/User");
 const { Expo } = require("expo-server-sdk");
+require('dotenv').config()
+const fetch = require("node-fetch");
 
-let expo = new Expo();
+const accessToken = process.env.NOTIFICATIONS_TOKEN
+
+let expo = new Expo({accessToken});
 
 exports.saveToken = async function (req, res) {
   try {
@@ -12,6 +16,7 @@ exports.saveToken = async function (req, res) {
     const findUserById = await User.findById(id);
 
     if (!findUserById) {
+      console.log('No se encontro el usuario');
       return res
         .status(404)
         .json("Ocurrio un error inesperado, intentalo nuevamente");
@@ -23,8 +28,12 @@ exports.saveToken = async function (req, res) {
         .json("Necesitas un plan para recibir señales de RedTrade");
     }
 
+    if(typeof findUserById.notifications_token === 'undefined'){
+	return res.status(400).json();
+    }
+
     if (findUserById.notifications_token.includes(token)) {
-      return res.status(400).json("Ya existe ese token en tu cuenta");
+      return res.status(400).json();
     }
 
     const newTokenList = [...findUserById.notifications_token, token];
@@ -33,6 +42,7 @@ exports.saveToken = async function (req, res) {
 
     return res.status(200).json("Token guardado");
   } catch (error) {
+    console.log(error)
     return res.status(500).json(error);
   }
 };
@@ -47,7 +57,7 @@ exports.sendToAll = async function (req, res) {
 
     for (let user of getUsers) {
       if (
-        user.notifications_token === undefined ||
+        typeof user.notifications_token === "undefined" ||
         user.notifications_token === []
       ) {
         continue;
@@ -60,9 +70,19 @@ exports.sendToAll = async function (req, res) {
       tokenList.push(...user.notifications_token);
     }
 
+    let tokenListFiltered = tokenList.filter((token, index) => {
+	return tokenList.indexOf(token) === index;
+    });
+
     let messages = [];
 
-    for (const token of tokenList) {
+    for (const token of tokenListFiltered) {
+
+      // Check that all your push tokens appear to be valid Expo push tokens
+      if (!Expo.isExpoPushToken(token)) {
+	  continue;
+      }
+	
       messages.push({
         to: token,
         sound: "default",
@@ -70,23 +90,20 @@ exports.sendToAll = async function (req, res) {
         body: "¡Ingresa ahora!",
       });
     }
-
-    let chunks = expo.chunkPushNotifications(messages);
-    let tickets = [];
-    (async () => {
-      for (let chunk of chunks) {
-        try {
-          let ticketChunk = await expo.sendPushNotificationsAsync(chunk);
-          tickets.push(...ticketChunk);
-          // NOTE: If a ticket contains an error code in ticket.details.error, you
-          // must handle it appropriately. The error codes are listed in the Expo
-          // documentation:
-          // https://docs.expo.io/push-notifications/sending-notifications/#individual-errors
-        } catch (error) {
-          return;
-        }
-      }
-    })();
+	
+    fetch('https://exp.host/--/api/v2/push/send', {
+        method: 'POST',
+        body:    JSON.stringify(messages),
+        headers: { 
+	 'Content-Type': 'application/json',
+	 'host': 'exp.host',
+	 Accept: 'application/json',
+	 'Accept-encoding': 'gzip,deflate',
+	 'Authorization': String('Bearer').concat(' ', accessToken),
+	},
+    })
+    .then(res => res.json())
+    .then(json => console.log(json));
 
     res.status(200).json();
   } catch (error) {
