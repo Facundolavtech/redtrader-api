@@ -36,9 +36,19 @@ const io = require("socket.io")(server, {
   },
 });
 
-const corsOptions = {
-  origin: process.env.CLIENT_URL,
-  optionsSuccessStatus: 200,
+let whitelist = [
+  "https://www.redtraderacademy.com",
+  "exp://g9-c55.facuh1999.redtrader-mobile.exp.direct:80",
+];
+let corsOptions = {
+  origin: function (origin, callback) {
+    if (whitelist.indexOf(origin) !== -1 || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  allowedHeaders: ["*"],
 };
 
 module.exports = function () {
@@ -48,10 +58,6 @@ module.exports = function () {
   app.use(express.urlencoded({ extended: true }));
   app.use(express.json({ extended: true }));
   app.use(cors());
-
-  const corsOptions = {
-    origin: "*",
-  };
 
   cron.schedule("0 * * * *", function () {
     //Every 1 hour
@@ -92,69 +98,44 @@ module.exports = function () {
   //Routes
 
   //Auth Routes
-  app.use("/api/users/auth", cors(corsOptions), require("./routes/Users/auth"));
+  app.use("/api/users/auth", require("./routes/Users/auth"));
 
   //Admin Routes
-  app.use("/api/admin", cors(corsOptions), require("./routes/Users/Admin"));
+  app.use("/api/admin", require("./routes/Users/Admin"));
 
   //Confirm account & Reset Password Routes
-  app.use(
-    "/api/users/confirm",
-    cors(corsOptions),
-    require("./routes/Users/confirm")
-  );
-  app.use(
-    "/api/users/password",
-    cors(corsOptions),
-    require("./routes/Users/password")
-  );
+  app.use("/api/users/confirm", require("./routes/Users/confirm"));
+  app.use("/api/users/password", require("./routes/Users/password"));
 
   //Change password Route
   app.use(
     "/api/users/changePassword",
-    cors(corsOptions),
     require("./routes/Users/changePassword")
   );
 
   //Update plan Routes
-  app.use("/api/users/plan", cors(corsOptions), require("./routes/Users/plan"));
+  app.use("/api/users/plan", require("./routes/Users/plan"));
 
   //Videos Routes
-  app.use("/api/videos", cors(corsOptions), require("./routes/videos"));
+  app.use("/api/videos", require("./routes/videos"));
 
   //Coupons Routes
-  app.use("/api/coupons", cors(corsOptions), require("./routes/coupons"));
+  app.use("/api/coupons", require("./routes/coupons"));
 
   //Payments Routes
-  app.use("/api/payments", cors(corsOptions), require("./routes/payments"));
+  app.use("/api/payments", require("./routes/payments"));
 
   //Educator Route
-  app.use(
-    "/api/educator/settings",
-    cors(corsOptions),
-    require("./routes/Lives/settings")
-  );
+  app.use("/api/educator/settings", require("./routes/Lives/settings"));
 
   //Lives Routes
-  app.use(
-    "/api/lives/streams",
-    cors(corsOptions),
-    require("./routes/Lives/streams")
-  );
-  app.use(
-    "/api/lives/educator",
-    cors(corsOptions),
-    require("./routes/Lives/educator")
-  );
+  app.use("/api/lives/streams", require("./routes/Lives/streams"));
+  app.use("/api/lives/educator", require("./routes/Lives/educator"));
 
   // //Signals Routes
-  app.use("/api/signals", cors(corsOptions), require("./routes/Signals"));
+  app.use("/api/signals", require("./routes/Signals"));
 
-  app.use(
-    "/api/users/notifications",
-    cors(corsOptions),
-    require("./routes/Notifications")
-  );
+  app.use("/api/users/notifications", require("./routes/Notifications"));
 
   server.listen(port, () => {
     console.log(`Server on port ${port}`);
