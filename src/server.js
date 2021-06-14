@@ -36,19 +36,25 @@ const io = require("socket.io")(httpsServer, {
   },
 });
 
+let whitelist = [
+  "https://www.redtraderacademy.com"];
+let corsOptions = {
+  origin: function (origin, callback) {
+    if (whitelist.indexOf(origin) !== -1 || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  allowedHeaders: ["*"],
+};
+
 module.exports = function () {
   node_media_server.run();
 
   //Middlewares
   app.use(express.urlencoded({ extended: true }));
   app.use(express.json({ extended: true }));
-
-  let whitelist = ['https://www.redtraderacademy.com'];
-  let corsOptions = {
-  origin: '*',
-  methods: '*',
-  allowedHeaders: '*'
-};
 
   cron.schedule("0 * * * *", function () {
     //Every 1 hour
@@ -104,6 +110,8 @@ module.exports = function () {
     cors(corsOptions),
     require("./routes/Users/password")
   );
+  app.use("/api/users/confirm",cors(corsOptions) require("./routes/Users/confirm"));
+  app.use("/api/users/password",cors(corsOptions) require("./routes/Users/password"));
 
   //Change password Route
   app.use(
@@ -142,10 +150,9 @@ module.exports = function () {
     cors(corsOptions),
     require("./routes/Lives/educator")
   );
-
+  
   // //Signals Routes
   app.use("/api/signals",cors(corsOptions), require("./routes/Signals"));
-
   app.use(
     "/api/users/notifications",
     cors(corsOptions),
