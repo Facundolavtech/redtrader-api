@@ -1,6 +1,6 @@
 const { Router } = require("express");
 const { authMiddleware } = require("../middlewares/auth.middleware");
-const { createPayment } = require("../controllers/payments");
+const { createPayment, upgradePayment } = require("../controllers/payments");
 const updatePlanFn = require("../utils/updatePlanFn");
 
 const router = Router();
@@ -9,6 +9,7 @@ const router = Router();
 // api/payments/
 
 router.post("/create", authMiddleware, createPayment);
+router.post("/upgrade", authMiddleware, upgradePayment);
 router.post("/hook/:plan", async (req, res) => {
   const { txn_id, email, status } = req.body;
 

@@ -36,7 +36,6 @@ const io = require("socket.io")(server, {
   },
 });
 
-
 const corsOptions = {
   origin: process.env.CLIENT_URL,
   optionsSuccessStatus: 200,
@@ -49,6 +48,10 @@ module.exports = function () {
   app.use(express.urlencoded({ extended: true }));
   app.use(express.json({ extended: true }));
   app.use(cors());
+
+  const corsOptions = {
+    origin: "*",
+  };
 
   cron.schedule("0 * * * *", function () {
     //Every 1 hour
