@@ -15,35 +15,49 @@ const public_url =
     ? "https://redtrader-api.com:9443"
     : "http://localhost:4000";
 
-// Certificate
-const key = fs.readFileSync(
-  "/etc/letsencrypt/live/redtrader-api.com/privkey.pem",
-  "utf8"
-);
-const cert = fs.readFileSync(
-  "/etc/letsencrypt/live/redtrader-api.com/cert.pem",
-  "utf8"
-);
-const ca = fs.readFileSync(
-  "/etc/letsencrypt/live/redtrader-api.com/chain.pem",
-  "utf8"
-);
+let httpsServer;
+let httpServer;
 
-const credentials = {
-  key,
-  cert,
-  ca,
-};
+if (process.env.NODE_ENV === "production") {
+  // Certificate
+  const key = fs.readFileSync(
+    "/etc/letsencrypt/live/redtrader-api.com/privkey.pem",
+    "utf8"
+  );
+  const cert = fs.readFileSync(
+    "/etc/letsencrypt/live/redtrader-api.com/cert.pem",
+    "utf8"
+  );
+  const ca = fs.readFileSync(
+    "/etc/letsencrypt/live/redtrader-api.com/chain.pem",
+    "utf8"
+  );
 
-// Starting both http & https servers
-const httpServer = http.createServer(app);
-const httpsServer = https.createServer(credentials, app);
+  const credentials = {
+    key,
+    cert,
+    ca,
+  };
+  httpsServer = https.createServer(credentials, app);
+} else {
+  httpServer = http.createServer(app);
+}
 
-const io = require("socket.io")(httpsServer, {
-  cors: {
-    origin: [public_url],
-  },
-});
+let io;
+
+if (process.env.NODE_ENV === "production") {
+  io = require("socket.io")(httpsServer, {
+    cors: {
+      origin: [public_url],
+    },
+  });
+} else {
+  io = require("socket.io")(httpServer, {
+    cors: {
+      origin: [public_url],
+    },
+  });
+}
 
 let whitelist = ["https://www.redtraderacademy.com"];
 let corsOptions = {
@@ -166,11 +180,13 @@ module.exports = function () {
     require("./routes/Notifications")
   );
 
-  httpServer.listen(8080, () => {
-    console.log("HTTP server on port 8080");
-  });
-
-  httpsServer.listen(9443, () => {
-    console.log("HTTPS server on port 9443");
-  });
+  if (process.env.NODE_ENV === "production") {
+    httpsServer.listen(9443, () => {
+      console.log("HTTPS server on port 9443");
+    });
+  } else {
+    httpServer.listen(4000, () => {
+      console.log("HTTP server on port 4000");
+    });
+  }
 };
