@@ -12,12 +12,29 @@ const UserSchema = new Schema(
         educator: { type: Boolean },
         admin: { type: Boolean },
         user: { type: Boolean },
+        partner: { type: Boolean },
       },
       default: {
         educator: false,
         admin: false,
+        partner: false,
         user: true,
       },
+    },
+    partnerID: { type: String, default: null },
+    partner_stats: {
+      type: {
+        registers: { type: Number },
+        pays: { type: Number },
+      },
+      default: null,
+    },
+    referred: {
+      type: {
+        partnerID: { type: String, default: null },
+        partner_name: { type: String, default: null },
+      },
+      default: null,
     },
     plan: {
       type: {
@@ -50,6 +67,7 @@ const UserSchema = new Schema(
       type: {
         stream_key: { type: String },
         educator_thumb: { type: String },
+        schedules: { type: Array },
       },
       default: {
         stream_key: null,

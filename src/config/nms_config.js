@@ -64,14 +64,14 @@ if (process.env.NODE_ENV === "production") {
         ping_timeout: 30,
       },
       http: {
-        port: 8882,
+        port: 8443,
         mediaroot: "./lives/media",
         allow_origin: "*",
       },
       auth: {
         play: true,
         api: true,
-        publish: true,
+        publish: false,
         secret: "redtraderNMS2021",
         api_user: "nms_admin",
         api_pass: "lolpbe888",

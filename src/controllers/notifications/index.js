@@ -1,11 +1,9 @@
 const User = require("../../models/User");
 const { Expo } = require("expo-server-sdk");
-require('dotenv').config()
+require("dotenv").config();
 const fetch = require("node-fetch");
 
-const accessToken = process.env.NOTIFICATIONS_TOKEN
-
-let expo = new Expo({accessToken});
+const accessToken = process.env.NOTIFICATIONS_TOKEN;
 
 exports.saveToken = async function (req, res) {
   try {
@@ -16,7 +14,6 @@ exports.saveToken = async function (req, res) {
     const findUserById = await User.findById(id);
 
     if (!findUserById) {
-      console.log('No se encontro el usuario');
       return res
         .status(404)
         .json("Ocurrio un error inesperado, intentalo nuevamente");
@@ -28,8 +25,8 @@ exports.saveToken = async function (req, res) {
         .json("Necesitas un plan para recibir señales de RedTrade");
     }
 
-    if(typeof findUserById.notifications_token === 'undefined'){
-	return res.status(400).json();
+    if (typeof findUserById.notifications_token === "undefined") {
+      return res.status(400).json();
     }
 
     if (findUserById.notifications_token.includes(token)) {
@@ -42,7 +39,7 @@ exports.saveToken = async function (req, res) {
 
     return res.status(200).json("Token guardado");
   } catch (error) {
-    console.log(error)
+    console.log(error);
     return res.status(500).json(error);
   }
 };
@@ -71,18 +68,17 @@ exports.sendToAll = async function (req, res) {
     }
 
     let tokenListFiltered = tokenList.filter((token, index) => {
-	return tokenList.indexOf(token) === index;
+      return tokenList.indexOf(token) === index;
     });
 
     let messages = [];
 
     for (const token of tokenListFiltered) {
-
       // Check that all your push tokens appear to be valid Expo push tokens
       if (!Expo.isExpoPushToken(token)) {
-	  continue;
+        continue;
       }
-	
+
       messages.push({
         to: token,
         sound: "default",
@@ -90,22 +86,28 @@ exports.sendToAll = async function (req, res) {
         body: "¡Ingresa ahora!",
       });
     }
-	
-    fetch('https://exp.host/--/api/v2/push/send', {
-        method: 'POST',
-        body:    JSON.stringify(messages),
-        headers: { 
-	 'Content-Type': 'application/json',
-	 'host': 'exp.host',
-	 Accept: 'application/json',
-	 'Accept-encoding': 'gzip,deflate',
-	 'Authorization': String('Bearer').concat(' ', accessToken),
-	},
-    })
-    .then(res => res.json())
-    .then(json => console.log(json));
 
-    res.status(200).json();
+    fetch("https://exp.host/--/api/v2/push/send", {
+      method: "POST",
+      body: JSON.stringify(messages),
+      headers: {
+        "Content-Type": "application/json",
+        host: "exp.host",
+        Accept: "application/json",
+        "Accept-encoding": "gzip,deflate",
+        Authorization: String("Bearer").concat(" ", accessToken),
+      },
+    })
+      .then(() => {
+        return res.status(200).json("Señal enviada");
+      })
+      .catch(() => {
+        return res
+          .status(400)
+          .json(
+            "Ocurrio un error al enviar la señal, intentalo de nuevo, si el problema persiste contacta con soporte"
+          );
+      });
   } catch (error) {
     return res.status(500).json(error);
   }

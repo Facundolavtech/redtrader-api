@@ -61,13 +61,14 @@ if (process.env.NODE_ENV === "production") {
 
 let whitelist = ["https://www.redtraderacademy.com"];
 let corsOptions = {
-  origin: function (origin, callback) {
-    if (whitelist.indexOf(origin) !== -1 || !origin) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
+  // origin: function (origin, callback) {
+  //   if (whitelist.indexOf(origin) !== -1 || !origin) {
+  //     callback(null, true);
+  //   } else {
+  //     callback(new Error("Not allowed by CORS"));
+  //   }
+  // },
+  origin: "*",
   allowedHeaders: ["*"],
 };
 
@@ -172,12 +173,19 @@ module.exports = function () {
     require("./routes/Lives/educator")
   );
 
-  // //Signals Routes
+  //Signals Routes
   app.use("/api/signals", cors(corsOptions), require("./routes/Signals"));
   app.use(
     "/api/users/notifications",
     cors(corsOptions),
     require("./routes/Notifications")
+  );
+
+  //Partner Routes
+  app.use(
+    "/api/users/partners",
+    cors(corsOptions),
+    require("./routes/Users/partners")
   );
 
   if (process.env.NODE_ENV === "production") {

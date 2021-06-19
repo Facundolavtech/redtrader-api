@@ -13,7 +13,9 @@ const client_url = process.env.CLIENT_URL || "http://localhost:3000";
 
 exports.createPayment = async function (req, res) {
   const { id } = req.user;
-  const { currency, plan_name, discount } = req.body;
+  const { currency, plan_name, partner_discount, discount } = req.body;
+
+  console.log(req.body);
 
   try {
     const findUserById = await User.findById(id);
@@ -38,6 +40,10 @@ exports.createPayment = async function (req, res) {
         else amount = calculateDiscount(plan.first_month, discount);
         ipn_url = plan.ipn;
       }
+    }
+
+    if (partner_discount && !first_month_payed) {
+      amount = amount - (amount * 10) / 100;
     }
 
     if (amount === null) {

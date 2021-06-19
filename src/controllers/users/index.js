@@ -2,19 +2,18 @@ const User = require("../../models/User");
 const { hash, compare } = require("bcrypt");
 const short = require("shortid");
 const generateToken = require("../../utils/generateToken");
+const updateReferred = require("../../utils/updateReferred");
 
 exports.register = async function (req, res) {
-  const values = req.body;
-
-  const { password, email } = values;
-
   try {
+    const { password, email, name } = req.body;
+
     const userExists = await User.findOne({ email });
     if (userExists) {
       return res.status(401).send("El correo electronico ya esta en uso");
     }
 
-    const newUser = await new User(values);
+    const newUser = await new User({ email, password, name });
 
     newUser.password = await hash(password, 10);
 
@@ -22,6 +21,10 @@ exports.register = async function (req, res) {
       .toUpperCase()
       .slice(0, 6)
       .replace(/[^a-zA-Z0-9]/g, `${Math.floor(Math.random() * 10) + 1}`);
+
+    if (req.body.partnerID) {
+      newUser.referred = await updateReferred(req.body.partnerID);
+    }
 
     await newUser.save().then(() => {
       const tokenPayload = {

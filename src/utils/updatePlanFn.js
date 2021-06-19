@@ -1,6 +1,7 @@
 const User = require("../models/User");
 const resetCoupon = require("./resetCoupon");
 const setExpireDate = require("./setExpireDate");
+const updatePartnerStats = require("./updatePartnerStats");
 
 module.exports = async function (email, txn_id, plan_to_update) {
   try {
@@ -8,10 +9,6 @@ module.exports = async function (email, txn_id, plan_to_update) {
 
     if (!findUserByEmail) {
       return { status: 404, msg: "No se encontro un usuario con ese mail" };
-    }
-
-    if (findUserByEmail.plan.active === true) {
-      return { status: 400, msg: "El usuario ya tiene plan" };
     }
 
     let plan_type;
@@ -25,6 +22,8 @@ module.exports = async function (email, txn_id, plan_to_update) {
       default:
         break;
     }
+
+    await updatePartnerStats(findUserByEmail);
 
     const plan = {
       active: true,

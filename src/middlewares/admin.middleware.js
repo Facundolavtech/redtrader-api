@@ -16,7 +16,6 @@ exports.adminMiddleware = async function (req, res, next) {
 
     next();
   } catch (error) {
-    console.log(error);
     return res.status(500).send("Ocurrio un error");
   }
 };

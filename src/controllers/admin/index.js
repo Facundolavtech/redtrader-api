@@ -147,6 +147,45 @@ exports.updateEducator = async function (req, res) {
 
     return res.status(200).json("Educador actualizado");
   } catch (error) {
-    return res.status(500).json(error);
+    return res.status(500).json("Ocurrio un error");
+  }
+};
+
+exports.updatePartner = async function (req, res) {
+  try {
+    const { email, active } = req.body;
+
+    let partnerID;
+    let partner_stats;
+
+    if (active) {
+      partnerID = await shortid.generate();
+      partner_stats = {
+        registers: 0,
+        pays: 0,
+      };
+    } else {
+      partnerID = null;
+      partner_stats = null;
+    }
+
+    const updateUser = await User.findOneAndUpdate(
+      { email },
+      {
+        $set: {
+          "roles.partner": active,
+          partnerID,
+          partner_stats,
+        },
+      }
+    );
+
+    if (!updateUser) {
+      return res.status(404).json("No se encontro un usuario con ese correo");
+    }
+
+    return res.status(200).json("Partner actualizado");
+  } catch (error) {
+    return res.status(500).json("Ocurrio un error");
   }
 };
