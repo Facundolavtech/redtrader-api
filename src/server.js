@@ -193,8 +193,8 @@ module.exports = function () {
       console.log("HTTPS server on port 9443");
     });
   } else {
-    httpServer.listen(4002, () => {
-      console.log("HTTP server on port 4002");
+    httpServer.listen(4000, () => {
+      console.log("HTTP server on port 4000");
     });
   }
 };
