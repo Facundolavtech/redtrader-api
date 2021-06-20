@@ -42,7 +42,6 @@ exports.updatePlanAdmin = async function (req, res) {
 
     return res.status(200).json("Plan actualizado con exito");
   } catch (error) {
-    console.log(error);
     return res.status(500).send("Ocurrio un error");
   }
 };
@@ -57,29 +56,8 @@ exports.updateAdmin = async function (req, res) {
       return res.status(404).json("No se encontro un usuario con ese correo");
     }
 
-    if (active) {
-      await User.findOneAndUpdate(
-        { email },
-        {
-          roles: {
-            admin: true,
-            educator: findUserByEmail.roles.educator,
-            user: findUserByEmail.roles.user,
-          },
-        }
-      );
-    } else {
-      await User.findOneAndUpdate(
-        { email },
-        {
-          roles: {
-            admin: false,
-            educator: findUserByEmail.roles.educator,
-            user: findUserByEmail.roles.user,
-          },
-        }
-      );
-    }
+    await User.findOneAndUpdate({ email }, { $set: { "roles.admin": active } });
+
     return res.status(200).json("Admin actualizado");
   } catch (error) {
     return res.status(500).send("Ocurrio un error");

@@ -15,8 +15,6 @@ exports.createPayment = async function (req, res) {
   const { id } = req.user;
   const { currency, plan_name, partner_discount, discount } = req.body;
 
-  console.log(req.body);
-
   try {
     const findUserById = await User.findById(id);
 

@@ -4,12 +4,14 @@ const User = require("../models/User");
 
 nms = new NodeMediaServer(nms_config);
 
-nms.on("donePublish", (id, StreamPath, args) => {
-  console.log(
-    "[NodeEvent on donePublish]",
-    `id=${id} StreamPath=${StreamPath} args=${JSON.stringify(args)}`
-  );
-});
+// nms.on("donePublish", (id, StreamPath, args) => {
+//   console.log(
+//     "[NodeEvent on donePublish]",
+//     `id=${id} StreamPath=${StreamPath} args=${JSON.stringify(args)}`
+//   );
+// });
+
+//Hola a todos
 
 nms.on("prePublish", async (id, StreamPath, params) => {
   await User.findOne({ stream_pw: params.stream_pw }, (err, user) => {
@@ -21,8 +23,6 @@ nms.on("prePublish", async (id, StreamPath, params) => {
       ) {
         const session = nms.getSession(id);
         session.reject();
-      } else {
-        console.info(`Nueva transmision en vivo de: ${user.name}`);
       }
     }
   });
