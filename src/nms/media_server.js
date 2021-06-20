@@ -11,8 +11,6 @@ nms = new NodeMediaServer(nms_config);
 //   );
 // });
 
-//Hola a todos
-
 nms.on("prePublish", async (id, StreamPath, params) => {
   await User.findOne({ stream_pw: params.stream_pw }, (err, user) => {
     if (!err) {
