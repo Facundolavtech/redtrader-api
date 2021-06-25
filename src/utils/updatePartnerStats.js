@@ -1,21 +1,22 @@
-const User = require("../models/User");
+const Partner = require("../models/Partner");
 
 module.exports = async function (user) {
   if (!user.first_month_payed && user.referred !== null) {
-    const doc = await User.findOne({
-      partnerID: user.referred.partnerID,
-    });
+    const findPartner = await Partner.findById(user.referred.partnerID);
 
-    if (doc) {
-      const pays = doc.partner_stats.pays;
-
-      await User.updateOne(
-        { partnerID: user.referred.partnerID },
-        { $set: { "partner_stats.pays": pays + 1 } }
-      );
-
+    if (!findPartner) {
       return;
-    } else return;
+    } else {
+      const updatedPays = findPartner.stats.pays + 1;
+
+      await Partner.findOneAndUpdate(
+        { _id: findPartner._id },
+        { $set: { "stats.pays": updatedPays } }
+      );
+    }
+
+    return;
+  } else {
+    return;
   }
-  return;
 };

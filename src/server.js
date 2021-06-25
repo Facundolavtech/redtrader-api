@@ -7,6 +7,7 @@ const cors = require("cors");
 const cron = require("node-cron");
 const RemoveExpiredPlans = require("./tasks/RemoveExpiredPlans");
 const node_media_server = require("./nms/media_server");
+const ResetPartnerStats = require("./tasks/ResetPartnerStats");
 require("./config/database");
 require("dotenv").config();
 
@@ -81,8 +82,10 @@ module.exports = function () {
 
   cron.schedule("0 * * * *", function () {
     //Every 1 hour
-    console.log("CRON: Deleting expired plans");
+    console.log("Executing cron tasks");
+
     RemoveExpiredPlans();
+    ResetPartnerStats();
   });
 
   io.on("connection", (socket) => {
@@ -118,74 +121,98 @@ module.exports = function () {
   //Routes
 
   //Auth Routes
-  app.use("/api/users/auth", cors(corsOptions), require("./routes/Users/auth"));
+  app.use(
+    "/api/users/auth",
+    cors(corsOptions),
+    require("./routes/Users/auth.routes")
+  );
 
   //Admin Routes
-  app.use("/api/admin", cors(corsOptions), require("./routes/Users/Admin"));
+  app.use(
+    "/api/admin",
+    cors(corsOptions),
+    require("./routes/Users/Admin/admin.routes")
+  );
 
   //Confirm account & Reset Password Routes
   app.use(
     "/api/users/confirm",
     cors(corsOptions),
-    require("./routes/Users/confirm")
+    require("./routes/Users/confirm.routes")
   );
   app.use(
     "/api/users/password",
     cors(corsOptions),
-    require("./routes/Users/password")
+    require("./routes/Users/password.routes")
   );
 
   //Change password Route
   app.use(
     "/api/users/changePassword",
     cors(corsOptions),
-    require("./routes/Users/changePassword")
+    require("./routes/Users/changePassword.routes")
   );
 
   //Update plan Routes
-  app.use("/api/users/plan", cors(corsOptions), require("./routes/Users/plan"));
+  app.use(
+    "/api/users/plan",
+    cors(corsOptions),
+    require("./routes/Users/plan.routes")
+  );
 
   //Videos Routes
-  app.use("/api/videos", cors(corsOptions), require("./routes/videos"));
+  app.use("/api/videos", cors(corsOptions), require("./routes/videos.routes"));
 
   //Coupons Routes
-  app.use("/api/coupons", cors(corsOptions), require("./routes/coupons"));
+  app.use(
+    "/api/coupons",
+    cors(corsOptions),
+    require("./routes/coupons.routes")
+  );
 
   //Payments Routes
-  app.use("/api/payments", cors(corsOptions), require("./routes/payments"));
+  app.use(
+    "/api/payments",
+    cors(corsOptions),
+    require("./routes/payments.routes")
+  );
 
   //Educator Route
   app.use(
     "/api/educator/settings",
     cors(corsOptions),
-    require("./routes/Lives/settings")
+    require("./routes/Lives/settings.routes")
   );
 
   //Lives Routes
   app.use(
     "/api/lives/streams",
     cors(corsOptions),
-    require("./routes/Lives/streams")
+    require("./routes/Lives/streams.routes")
   );
   app.use(
     "/api/lives/educator",
     cors(corsOptions),
-    require("./routes/Lives/educator")
+    require("./routes/Lives/educator.routes")
   );
 
   //Signals Routes
-  app.use("/api/signals", cors(corsOptions), require("./routes/Signals"));
+  app.use(
+    "/api/signals",
+    cors(corsOptions),
+    require("./routes/Signals/signals.routes")
+  );
   app.use(
     "/api/users/notifications",
     cors(corsOptions),
-    require("./routes/Notifications")
+    require("./routes/Notifications/notifications.routes")
   );
 
   //Partner Routes
   app.use(
     "/api/users/partners",
     cors(corsOptions),
-    require("./routes/Users/partners")
+    require("./routes/Users/partners.routes")
   );
 
   if (process.env.NODE_ENV === "production") {

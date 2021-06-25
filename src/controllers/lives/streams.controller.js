@@ -1,4 +1,5 @@
 const User = require("../../models/User");
+const Educator = require("../../models/Educator");
 
 exports.getStreams = async function (req, res) {
   try {
@@ -10,8 +11,10 @@ exports.getStreams = async function (req, res) {
       return res.status(404).json();
     }
 
-    if (findUser.plan.active === false) {
-      return res.status(401).json();
+    if (typeof findUser.plan === "undefined" || !findUser.plan) {
+      return res
+        .status(401)
+        .json("Necesitas un plan para acceder a RedTrader live");
     }
 
     if (!req.query.streams) {
@@ -25,15 +28,13 @@ exports.getStreams = async function (req, res) {
     if (lives.includes("live")) {
       const livesList = Object.keys(streams.live);
 
-      const users = await User.find({
-        "educator_info.stream_key": {
+      const online_educators = await Educator.find({
+        stream_key: {
           $in: livesList,
         },
-      }).select(
-        "-password -stream_pw -discount -roles -first_month_payed -plan -createdAt -updatedAt -confirmed -_id"
-      );
+      }).select("name stream_key short_id thumbnail schedules user -_id");
 
-      return res.status(200).json(users);
+      return res.status(200).json(online_educators);
     } else {
       return res.status(200).json({ streams: [] });
     }

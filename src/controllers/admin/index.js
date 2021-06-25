@@ -1,8 +1,10 @@
-const shortid = require("shortid");
+const Educator = require("../../models/Educator");
+const Partner = require("../../models/Partner");
+const Plan = require("../../models/Plan");
 const User = require("../../models/User");
 
-exports.updatePlanAdmin = async function (req, res) {
-  const { email, expireDate, active } = req.body;
+exports.updatePlan = async function (req, res) {
+  const { email, active, expireDate } = req.body;
 
   try {
     const findUserByEmail = await User.findOne({ email });
@@ -12,32 +14,33 @@ exports.updatePlanAdmin = async function (req, res) {
     }
 
     if (active) {
-      await User.findOneAndUpdate(
-        { email },
-        {
-          plan: {
-            active: true,
-            txn_id: null,
-            expire: expireDate,
-            plan_type: { premium: true, premium_plus: true },
-          },
-        }
-      );
+      const findPlan = await Plan.findOne({ user: findUserByEmail._id });
+
+      if (findPlan) {
+        return res.status(400).json("El usuario ya tiene plan");
+      }
+
+      const plan = {
+        user: findUserByEmail._id,
+        type: "premium_plus",
+        expires: expireDate,
+      };
+
+      const newPlan = await new Plan(plan);
+
+      await newPlan.save();
+
+      await User.findOneAndUpdate({ email }, { plan: newPlan._id });
     } else {
-      await User.findOneAndUpdate(
-        { email },
-        {
-          plan: {
-            active: false,
-            expire: null,
-            plan_type: {
-              premium: false,
-              premium_plus: false,
-            },
-            txn_id: null,
-          },
+      await User.findOneAndUpdate({ email }, { plan: null });
+
+      Plan.findOne({ user: findUserByEmail._id }, function (err, doc) {
+        if (err) {
+          return res.status(404).json("El usuario no tiene plan");
         }
-      );
+
+        doc.remove();
+      });
     }
 
     return res.status(200).json("Plan actualizado con exito");
@@ -56,7 +59,14 @@ exports.updateAdmin = async function (req, res) {
       return res.status(404).json("No se encontro un usuario con ese correo");
     }
 
-    await User.findOneAndUpdate({ email }, { $set: { "roles.admin": active } });
+    if (active) {
+      if (findUserByEmail.roles.includes("admin")) {
+        return res.status(400).json("El usuario ya es admin");
+      }
+      await User.findOneAndUpdate({ email }, { $push: { roles: "admin" } });
+    } else {
+      await User.findOneAndUpdate({ email }, { $pull: { roles: "admin" } });
+    }
 
     return res.status(200).json("Admin actualizado");
   } catch (error) {
@@ -91,38 +101,33 @@ exports.updateEducator = async function (req, res) {
       return res.status(404).json("No se encontro un usuario con ese correo");
     }
 
-    let stream_key;
-    let stream_pw;
-
     if (active) {
-      stream_key = await shortid.generate();
-      stream_pw = await shortid.generate();
+      if (findUserByEmail.roles.includes("educator")) {
+        return res.status(400).json("El usuario ya es educador");
+      }
+
+      const findEducator = await Educator.findOne({
+        user: findUserByEmail._id,
+      });
+
+      if (findEducator) {
+        return res.status(400).json("El usuario ya es educador");
+      }
+
+      await User.findOneAndUpdate({ email }, { $push: { roles: "educator" } });
+      const educator = {
+        short_id: findUserByEmail.short_id,
+        name: findUserByEmail.name,
+        user: findUserByEmail._id,
+      };
+
+      const newEducator = await new Educator(educator);
+
+      await newEducator.save();
     } else {
-      stream_key = null;
-      stream_pw = null;
+      await Educator.findOneAndRemove({ user: findUserByEmail._id });
+      await User.findOneAndUpdate({ email }, { $pull: { roles: "educator" } });
     }
-
-    const dataToUpdate = {
-      roles: {
-        educator: active,
-        admin: findUserByEmail.roles.admin,
-        user: findUserByEmail.roles.user,
-      },
-      plan: {
-        active,
-        plan_type: { premium: true, premium_plus: true },
-        txn_id: null,
-        expire: null,
-      },
-      educator_info: {
-        stream_key,
-        educator_thumb: "",
-      },
-      stream_pw,
-    };
-
-    await User.findOneAndUpdate({ email }, dataToUpdate);
-
     return res.status(200).json("Educador actualizado");
   } catch (error) {
     return res.status(500).json("Ocurrio un error");
@@ -131,35 +136,42 @@ exports.updateEducator = async function (req, res) {
 
 exports.updatePartner = async function (req, res) {
   try {
-    const { email, active } = req.body;
+    const { email, active, special_discount } = req.body;
 
-    let partnerID;
-    let partner_stats;
+    const findUserByEmail = await User.findOne({ email });
 
-    if (active) {
-      partnerID = await shortid.generate();
-      partner_stats = {
-        registers: 0,
-        pays: 0,
-      };
-    } else {
-      partnerID = null;
-      partner_stats = null;
+    if (!findUserByEmail) {
+      return res
+        .status(404)
+        .json("No se encontro un usuario registrado con ese correo");
     }
 
-    const updateUser = await User.findOneAndUpdate(
-      { email },
-      {
-        $set: {
-          "roles.partner": active,
-          partnerID,
-          partner_stats,
-        },
+    if (active) {
+      if (findUserByEmail.roles.includes("partner")) {
+        return res.status(400).json("El usuario ya es partner");
       }
-    );
 
-    if (!updateUser) {
-      return res.status(404).json("No se encontro un usuario con ese correo");
+      const findPartner = await Partner.findOne({ user: findUserByEmail._id });
+
+      if (findPartner) {
+        return res.status(400).json("El usuario ya tiene partner");
+      }
+
+      const partner = {
+        user: findUserByEmail._id,
+        name: findUserByEmail.name,
+        email: findUserByEmail.email,
+        special_discount,
+      };
+
+      const newPartner = await new Partner(partner);
+
+      await newPartner.save();
+
+      await User.findOneAndUpdate({ email }, { $push: { roles: "partner" } });
+    } else {
+      await User.findOneAndUpdate({ email }, { $pull: { roles: "partner" } });
+      await Partner.findOneAndRemove({ user: findUserByEmail._id });
     }
 
     return res.status(200).json("Partner actualizado");

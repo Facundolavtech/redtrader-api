@@ -4,9 +4,9 @@ const User = require("../../models/User");
 exports.createCoupon = async function (req, res) {
   try {
     const data = req.body;
-    const { coupon_name } = data;
+    const { name } = data;
 
-    const findCoupon = await Coupon.findOne({ coupon_name });
+    const findCoupon = await Coupon.findOne({ name });
 
     if (findCoupon) {
       return res.status(400).json("Ya existe un cupon con ese nombre");
@@ -14,7 +14,7 @@ exports.createCoupon = async function (req, res) {
 
     const newCoupon = await new Coupon(data);
 
-    await newCoupon.save();
+    await newCoupon.save({ forceServerObjectId: true });
 
     return res.status(200).json("Cupon creado");
   } catch (error) {
@@ -43,7 +43,7 @@ exports.deleteCoupon = async function (req, res) {
 exports.applyCoupon = async function (req, res) {
   try {
     const { id } = req.user;
-    const { coupon_name } = req.body;
+    const { name } = req.body;
 
     const findUserById = await User.findById(id);
 
@@ -51,25 +51,21 @@ exports.applyCoupon = async function (req, res) {
       return res.status(404).json("Inicia sesion para continuar");
     }
 
-    if (findUserById.discount.active === true) {
+    if (findUserById.coupon) {
       return res.status(400).json("Ya tienes un cupon activo");
     }
 
-    const findCoupon = await Coupon.findOne({ coupon_name });
+    const findCoupon = await Coupon.findOne({ name });
 
     if (!findCoupon) {
       return res.status(404).json("No se encontro ningun cupon con ese nombre");
     }
 
     await User.findByIdAndUpdate(id, {
-      discount: {
-        active: true,
-        percent: findCoupon.discount,
-        coupon_name: findCoupon.coupon_name,
-      },
+      coupon: { discount: findCoupon.discount, name: findCoupon.name },
     });
 
-    await Coupon.findOneAndRemove({ coupon_name });
+    await Coupon.findOneAndRemove({ name });
 
     return res.status(200).json("Cupon aplicado");
   } catch (error) {

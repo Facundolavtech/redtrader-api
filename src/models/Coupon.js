@@ -2,8 +2,8 @@ const { Schema, model } = require("mongoose");
 
 const CouponSchema = new Schema(
   {
-    coupon_name: { type: String, required: true, unique: true },
-    discount: { type: Number, required: true },
+    name: String,
+    discount: Number,
   },
   {
     timestamps: true,

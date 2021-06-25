@@ -10,7 +10,7 @@ exports.getVideos = async function (req, res) {
 
     const videoList = await Video.find({});
 
-    if (findUser.plan.active === true) {
+    if (findUser.plan !== "undefined" && findUser.plan) {
       const response = [...videoList];
 
       return res.status(200).json(response);

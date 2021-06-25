@@ -20,16 +20,16 @@ exports.sendEmail = async function (req, res) {
       return res.status(400).send("Ya tienes la cuenta confirmada");
     }
 
-    const userId = findUserByEmail._id;
+    const id = findUserByEmail._id;
     const token = uuidv4();
 
-    const confirmToken = await new ConfirmAccountToken({ userId, token });
+    const confirmToken = await new ConfirmAccountToken({ user: id, token });
 
     await confirmToken.save();
 
     const url = process.env.CLIENT_URL || "http://localhost:3000";
 
-    const html = `<p style="color: #777;">Ingresa al siguiente enlace para confirmar tu cuenta</p><a href="${url}/confirm/params?id=${userId}&token=${token}" style="padding: 10px 40px; background: #f50606; text-align: center; text-decoration: none; color: #fff; margin-top: 15px; border-radius: 10px; display: inline-block; font-weight: bold;">Confirmar Cuenta</a>`;
+    const html = `<p style="color: #777;">Ingresa al siguiente enlace para confirmar tu cuenta</p><a href="${url}/confirm/params?id=${id}&token=${token}" style="padding: 10px 40px; background: #f50606; text-align: center; text-decoration: none; color: #fff; margin-top: 15px; border-radius: 10px; display: inline-block; font-weight: bold;">Confirmar Cuenta</a>`;
 
     const message = smtp_message(
       process.env.SMTP_USER,
@@ -43,7 +43,7 @@ exports.sendEmail = async function (req, res) {
       return res.status(200).send("Email enviado con exito");
     });
   } catch (error) {
-    return res.status(500).json({ msg: "Ocurrio un error" });
+    return res.status(500).json("Ocurrio un error");
   }
 };
 
@@ -67,7 +67,7 @@ exports.confirm = async function (req, res) {
         );
     }
 
-    if (findToken.userId != id) {
+    if (findToken.user != id) {
       return res
         .status(401)
         .json(
@@ -81,16 +81,16 @@ exports.confirm = async function (req, res) {
 
     return res.status(200).send("Cuenta confirmada con exito");
   } catch (error) {
-    return res.status(500).json({ msg: "Ocurrio un error" });
+    return res.status(500).json("Ocurrio un error");
   }
 };
 
 //Check if the user already has a confirmation token, to avoid sending another email
 exports.getConfirmToken = async function (req, res) {
-  const userId = req.params.id;
+  const id = req.params.id;
 
   try {
-    const findToken = await ConfirmAccountToken.findOne({ userId });
+    const findToken = await ConfirmAccountToken.findOne({ user: id });
 
     if (findToken) {
       return res.status(200).json();
@@ -98,6 +98,6 @@ exports.getConfirmToken = async function (req, res) {
       return res.status(404).json();
     }
   } catch (error) {
-    return res.status(500).json({ msg: "Ocurrio un error" });
+    return res.status(500).json("Ocurrio un error");
   }
 };

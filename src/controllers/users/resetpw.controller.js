@@ -22,7 +22,7 @@ exports.resetPassword = async function (req, res) {
         );
     }
 
-    if (findToken.userId != id) {
+    if (findToken.user != id) {
       return res
         .status(401)
         .send(
@@ -38,6 +38,6 @@ exports.resetPassword = async function (req, res) {
 
     return res.status(200).send("Contraseña cambiada con exito");
   } catch (error) {
-    return res.status(500).json({ msg: "Ocurrio un error" });
+    return res.status(500).json("Ocurrio un error");
   }
 };

@@ -1,25 +1,22 @@
-const User = require("../models/User");
+const Partner = require("../models/Partner");
 
-module.exports = async function (partnerID) {
-  const findPartnerById = await User.findOne({ partnerID });
+module.exports = async function (link) {
+  const findPartner = await Partner.findOne({ link });
 
-  if (!findPartnerById) {
+  if (!findPartner) {
     return null;
   }
 
-  if (!findPartnerById.roles.partner) {
-    return null;
-  }
+  const registers = findPartner.stats.registers;
 
-  const registers = findPartnerById.partner_stats.registers;
-
-  await User.findOneAndUpdate(
-    { _id: findPartnerById._id },
-    { $set: { "partner_stats.registers": registers + 1 } }
+  await Partner.findOneAndUpdate(
+    { _id: findPartner._id },
+    { $set: { "stats.registers": registers + 1 } }
   );
 
   return {
-    partner_name: findPartnerById.name,
-    partnerID,
+    partner_name: findPartner.name,
+    partnerID: findPartner._id,
+    special_discount: findPartner.special_discount,
   };
 };

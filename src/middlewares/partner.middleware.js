@@ -1,6 +1,6 @@
 const User = require("../models/User");
 
-exports.educatorMiddleware = async function (req, res, next) {
+exports.partnerMiddleware = async function (req, res, next) {
   try {
     const { id } = req.user;
 
@@ -12,12 +12,12 @@ exports.educatorMiddleware = async function (req, res, next) {
         .json("Ocurrio un error inesperado, inicia sesion nuevamente");
     }
 
-    if (!findUserById.roles.includes("educator")) {
+    if (!findUserById.roles.includes("partner")) {
       return res.status(401).json();
     }
 
     next();
   } catch (error) {
-    return res.status(500).json("Ocurrio un error");
+    return res.status(500).json();
   }
 };

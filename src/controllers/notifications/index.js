@@ -19,12 +19,6 @@ exports.saveToken = async function (req, res) {
         .json("Ocurrio un error inesperado, intentalo nuevamente");
     }
 
-    if (!findUserById.plan.active) {
-      return res
-        .status(401)
-        .json("Necesitas un plan para recibir señales de RedTrade");
-    }
-
     if (typeof findUserById.notifications_token === "undefined") {
       return res.status(400).json();
     }
@@ -39,7 +33,6 @@ exports.saveToken = async function (req, res) {
 
     return res.status(200).json("Token guardado");
   } catch (error) {
-    console.log(error);
     return res.status(500).json(error);
   }
 };

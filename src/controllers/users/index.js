@@ -1,6 +1,6 @@
 const User = require("../../models/User");
+const Plan = require("../../models/Plan");
 const { hash, compare } = require("bcrypt");
-const short = require("shortid");
 const generateToken = require("../../utils/generateToken");
 const updateReferred = require("../../utils/updateReferred");
 
@@ -17,13 +17,8 @@ exports.register = async function (req, res) {
 
     newUser.password = await hash(password, 10);
 
-    newUser.short_id = await short()
-      .toUpperCase()
-      .slice(0, 6)
-      .replace(/[^a-zA-Z0-9]/g, `${Math.floor(Math.random() * 10) + 1}`);
-
-    if (req.body.partnerID) {
-      newUser.referred = await updateReferred(req.body.partnerID);
+    if (req.body.partner_link) {
+      newUser.referred = await updateReferred(req.body.partner_link);
     }
 
     await newUser.save().then(() => {
@@ -37,7 +32,6 @@ exports.register = async function (req, res) {
       });
     });
   } catch (error) {
-    console.log(error);
     return res.status(500).json({ msg: "Ocurrio un error" });
   }
 };
@@ -87,7 +81,14 @@ exports.auth = async function (req, res) {
       return res.status(404).json();
     }
 
-    return res.status(200).json(findUser);
+    let plan;
+
+    if (findUser.plan) {
+      plan = await Plan.findOne({ user: findUser._id });
+      return res.status(200).json({ user: findUser, plan });
+    }
+
+    return res.status(200).json({ user: findUser, plan: null });
   } catch (error) {
     return res.status(500).json({ msg: "Ocurrio un error" });
   }

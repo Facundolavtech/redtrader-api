@@ -1,4 +1,5 @@
 const { Schema, model } = require("mongoose");
+const short = require("shortid");
 
 const UserSchema = new Schema(
   {
@@ -8,88 +9,38 @@ const UserSchema = new Schema(
     password: { type: String, required: true },
     confirmed: { type: Boolean, default: false },
     roles: {
-      type: {
-        educator: { type: Boolean },
-        admin: { type: Boolean },
-        user: { type: Boolean },
-        partner: { type: Boolean },
-      },
-      default: {
-        educator: false,
-        admin: false,
-        partner: false,
-        user: true,
-      },
-    },
-    partnerID: { type: String, default: null },
-    partner_stats: {
-      type: {
-        registers: { type: Number },
-        pays: { type: Number },
-      },
-      default: null,
+      type: [String],
+      default: ["user"],
+      enum: ["user", "admin", "educator", "partner"],
     },
     referred: {
       type: {
-        partnerID: { type: String, default: null },
-        partner_name: { type: String, default: null },
+        partnerID: { type: Schema.Types.ObjectId, ref: "Partner" },
+        partner_name: { type: String },
       },
       default: null,
     },
     plan: {
-      type: {
-        active: { type: Boolean },
-        plan_type: {
-          type: {
-            premium: { type: Boolean },
-            premium_plus: { type: Boolean },
-          },
-        },
-        expire: {
-          type: Date,
-        },
-        txn_id: {
-          type: String,
-        },
-      },
-      default: {
-        active: false,
-        plan_type: {
-          premium: false,
-          premium_plus: false,
-        },
-        expire: null,
-        txn_id: null,
-      },
+      type: Schema.Types.ObjectId,
+      ref: "Plan",
+      default: null,
     },
     first_month_payed: { type: Boolean, default: false },
-    educator_info: {
-      type: {
-        stream_key: { type: String },
-        educator_thumb: { type: String },
-        schedules: { type: Array },
-      },
-      default: {
-        stream_key: null,
-        educator_thumb: null,
-      },
-    },
-    stream_pw: { type: String },
-    discount: {
-      type: {
-        active: { type: Boolean },
-        percent: { type: Number },
-        coupon_name: { type: String },
-      },
-      default: {
-        active: false,
-        percent: 0,
-        coupon_name: null,
-      },
-    },
+    coupon: { type: { discount: Number, name: String }, default: null },
     notifications_token: { type: Array },
   },
   { timestamps: true, versionKey: false }
 );
+
+UserSchema.pre("save", async function (next) {
+  let user = this;
+
+  user.short_id = await short()
+    .toUpperCase()
+    .slice(0, 6)
+    .replace(/[^a-zA-Z0-9]/g, `${Math.floor(Math.random() * 10) + 1}`);
+
+  next();
+});
 
 module.exports = model("User", UserSchema);

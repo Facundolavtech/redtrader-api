@@ -14,7 +14,6 @@ const router = Router();
 
 //ROUTE
 // api/videos/
-
 router.get("/", authMiddleware, getVideos);
 router.post("/", authMiddleware, adminMiddleware, createVideo);
 

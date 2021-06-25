@@ -1,5 +1,6 @@
 const User = require("../../models/User");
 const ArbitrageVideo = require("../../models/Arbitrage_Video");
+const Plan = require("../../models/Plan");
 
 exports.getArbitrageVideos = async function (req, res) {
   try {
@@ -9,17 +10,26 @@ exports.getArbitrageVideos = async function (req, res) {
 
     if (!findUser) return res.status(404).send("Inicia sesion para continuar");
 
-    const videos = await ArbitrageVideo.find({ level });
+    if (typeof findUser.plan !== "undefined") {
+      const plan = await Plan.findOne({ _id: findUser.plan });
 
-    if (!findUser.plan.active || !findUser.plan.plan_type.premium_plus) {
+      if (plan.type !== "premium_plus") {
+        return res
+          .status(401)
+          .json(
+            "Necesitas un plan superior para acceder a la academia de arbitrage"
+          );
+      } else {
+        const videos = await ArbitrageVideo.find({ level });
+        return res.status(200).json(videos);
+      }
+    } else {
       return res
         .status(401)
         .json(
           "Necesitas el plan Premium Plus para acceder a la academia de arbitrage"
         );
     }
-
-    return res.status(200).json(videos);
   } catch (error) {
     return res.status(500).json({ msg: "Ocurrio un error" });
   }
