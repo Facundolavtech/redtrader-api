@@ -103,7 +103,7 @@ exports.createPayment = async function (req, res) {
       buyer_name: name,
       item_name: plan_name,
       ipn_url,
-      success_url: `${client_url}/dashboard`,
+      success_url: `${client_url}/signin`,
       cancel_url: `${client_url}/dashboard/checkout`,
     };
 

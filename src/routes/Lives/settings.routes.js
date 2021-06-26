@@ -2,18 +2,28 @@ const { Router } = require("express");
 const { authMiddleware } = require("../../middlewares/auth.middleware");
 const {
   generateStreamKey,
-  getStreamKey,
+  getCredentials,
   generateStreamPassword,
 } = require("../../controllers/lives/settings.controller");
+const { educatorMiddleware } = require("../../middlewares/educator.middleware");
 
 const router = Router();
 
 //ROUTE
 // api/educator/settings
 
-router.get("/stream_key", authMiddleware, getStreamKey);
-
-router.post("/stream_key", authMiddleware, generateStreamKey);
-router.post("/stream_pw", authMiddleware, generateStreamPassword);
+router.get("/credentials", authMiddleware, educatorMiddleware, getCredentials);
+router.post(
+  "/stream_key",
+  authMiddleware,
+  educatorMiddleware,
+  generateStreamKey
+);
+router.post(
+  "/stream_pw",
+  authMiddleware,
+  educatorMiddleware,
+  generateStreamPassword
+);
 
 module.exports = router;
