@@ -69,8 +69,6 @@ let corsOptions = {
       callback(new Error("Not allowed by CORS"));
     }
   },
-  origin: "*",
-  allowedHeaders: ["*"],
 };
 
 module.exports = function () {
