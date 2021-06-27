@@ -2,9 +2,9 @@ const Partner = require("../../models/Partner");
 
 exports.getPartners = async function (req, res) {
   try {
-    const partners = await Partner.find({}).select(
-      "special_discount _id name email stats"
-    );
+    const partners = await Partner.find({})
+      .sort({ createdAt: "desc" })
+      .select("special_discount _id name email stats");
 
     return res.status(200).json(partners);
   } catch (error) {

@@ -2,11 +2,11 @@ const User = require("../../models/User");
 const bcrypt = require("bcrypt");
 
 exports.changePassword = async function (req, res) {
-  const userId = req.user.id;
+  const { id } = req.user;
   const { newPassword, email } = req.body;
 
   try {
-    const findUserById = await User.findById(userId);
+    const findUserById = await User.findById(id);
     if (!findUserById) {
       return res.status(404).json("Ocurrio un error, intenta de nuevo");
     }
@@ -18,7 +18,7 @@ exports.changePassword = async function (req, res) {
     await bcrypt
       .hash(newPassword, 10)
       .then(async (password) => {
-        await User.findByIdAndUpdate(userId, { password });
+        await User.findByIdAndUpdate(id, { password });
         return res.status(200).json("Contraseña actualizada");
       })
       .catch(() => {
