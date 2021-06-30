@@ -1,3 +1,5 @@
+require('dotenv').config()
+
 switch (process.env.NODE_ENV) {
   case "production":
     const httpsServer = require("./src/httpsServer");
