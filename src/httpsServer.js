@@ -1,7 +1,6 @@
 const express = require("express");
 const app = express();
 const fs = require("fs");
-const http = require("http");
 const https = require("https");
 const cors = require("cors");
 const cron = require("node-cron");
@@ -10,55 +9,39 @@ const node_media_server = require("./nms/media_server");
 const ResetPartnerStats = require("./tasks/ResetPartnerStats");
 require("./config/database");
 require("dotenv").config();
+const port = 9443;
 
-const public_url =
-  process.env.NODE_ENV == "production"
-    ? "https://redtrader-api.com:9443"
-    : "http://localhost:4000";
+const public_url = "https://redtrader-api.com:9443";
 
-let httpsServer;
-let httpServer;
+// Certificate
+const key = fs.readFileSync(
+  "/etc/letsencrypt/live/redtrader-api.com/privkey.pem",
+  "utf8"
+);
+const cert = fs.readFileSync(
+  "/etc/letsencrypt/live/redtrader-api.com/cert.pem",
+  "utf8"
+);
+const ca = fs.readFileSync(
+  "/etc/letsencrypt/live/redtrader-api.com/chain.pem",
+  "utf8"
+);
 
-if (process.env.NODE_ENV === "production") {
-  // Certificate
-  const key = fs.readFileSync(
-    "/etc/letsencrypt/live/redtrader-api.com/privkey.pem",
-    "utf8"
-  );
-  const cert = fs.readFileSync(
-    "/etc/letsencrypt/live/redtrader-api.com/cert.pem",
-    "utf8"
-  );
-  const ca = fs.readFileSync(
-    "/etc/letsencrypt/live/redtrader-api.com/chain.pem",
-    "utf8"
-  );
+const credentials = {
+  key,
+  cert,
+  ca,
+};
 
-  const credentials = {
-    key,
-    cert,
-    ca,
-  };
-  httpsServer = https.createServer(credentials, app);
-} else {
-  httpServer = http.createServer(app);
-}
+const httpsServer = https.createServer(credentials, app);
 
 let io;
 
-if (process.env.NODE_ENV === "production") {
-  io = require("socket.io")(httpsServer, {
-    cors: {
-      origin: [public_url],
-    },
-  });
-} else {
-  io = require("socket.io")(httpServer, {
-    cors: {
-      origin: [public_url],
-    },
-  });
-}
+io = require("socket.io")(httpsServer, {
+  cors: {
+    origin: [public_url],
+  },
+});
 
 let whitelist = ["https://www.redtraderacademy.com"];
 let corsOptions = {
@@ -69,8 +52,6 @@ let corsOptions = {
       callback(new Error("Not allowed by CORS"));
     }
   },
-  origin: "*",
-  allowedHeaders: ["*"],
 };
 
 module.exports = function () {
@@ -195,6 +176,11 @@ module.exports = function () {
     cors(corsOptions),
     require("./routes/Lives/educator.routes")
   );
+  app.use(
+    "/api/lives/transmissions",
+    cors(corsOptions),
+    require("./routes/Lives/transmission.routes")
+  );
 
   //Signals Routes
   app.use(
@@ -215,13 +201,7 @@ module.exports = function () {
     require("./routes/Users/partners.routes")
   );
 
-  if (process.env.NODE_ENV === "production") {
-    httpsServer.listen(9443, () => {
-      console.log("HTTPS server on port 9443");
-    });
-  } else {
-    httpServer.listen(4000, () => {
-      console.log("HTTP server on port 4000");
-    });
-  }
+  httpsServer.listen(port, () => {
+    console.log(`HTTPS server on port ${port}`);
+  });
 };

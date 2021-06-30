@@ -1,5 +1,4 @@
 const Educator = require("../../models/Educator");
-const User = require("../../models/User");
 
 exports.getEducatorInfo = async function (req, res) {
   try {
