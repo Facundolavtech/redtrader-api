@@ -33,7 +33,7 @@ exports.getSignals = async function (req, res) {
 
       const findPlan = await Plan.findById(findUserById.plan);
 
-      if (!findPlan.type !== "premium_plus") {
+      if (findPlan.type !== "premium_plus") {
         let filterSignals = signals.filter(
           ({ data }) => data.market.value !== "acciones"
         );
@@ -42,6 +42,50 @@ exports.getSignals = async function (req, res) {
 
       return res.status(200).json(signals);
     }
+  } catch (error) {
+    return res.status(500).json({ msg: "Ocurrio un error", error });
+  }
+};
+
+exports.updateSignal = async function (req, res) {
+  try {
+    const { id } = req.params;
+
+    const findSignal = await Signal.findById(id);
+
+    if (!findSignal) {
+      return res
+        .status(401)
+        .json("La señal que quieres editar no existe o expiro");
+    }
+
+    await Signal.findOneAndUpdate(
+      { _id: id },
+      { $set: { data: req.body } },
+      { upsert: true }
+    );
+
+    return res.status(200).json("Señal actualizada");
+  } catch (error) {
+    return res.status(500).json({ msg: "Ocurrio un error", error });
+  }
+};
+
+exports.deleteSignal = async function (req, res) {
+  try {
+    const { id } = req.params;
+
+    const findSignal = await Signal.findById(id);
+
+    if (!findSignal) {
+      return res
+        .status(401)
+        .json("La señal que quieres eliminar no existe o expiro");
+    }
+
+    await Signal.findByIdAndRemove(id);
+
+    return res.status(200).json("Señal eliminada");
   } catch (error) {
     return res.status(500).json({ msg: "Ocurrio un error", error });
   }

@@ -2,6 +2,7 @@ const User = require("../../models/User");
 const { Expo } = require("expo-server-sdk");
 require("dotenv").config();
 const fetch = require("node-fetch");
+const Plan = require("../../models/Plan");
 
 const accessToken = process.env.NOTIFICATIONS_TOKEN;
 
@@ -41,7 +42,7 @@ exports.sendToAll = async function (req, res) {
   try {
     const { market } = req.body;
 
-    const getUsers = await User.find({ "plan.active": true });
+    const getUsers = await User.find({ plan: { $ne: null } });
 
     const tokenList = [];
 
@@ -53,7 +54,9 @@ exports.sendToAll = async function (req, res) {
         continue;
       }
 
-      if (!user.plan.plan_type.premium_plus && market === "Acciones") {
+      const planInfo = await Plan.findOne({ _id: user.plan });
+
+      if (planInfo.type !== "premium_plus" && market === "Acciones") {
         continue;
       }
 
@@ -67,7 +70,6 @@ exports.sendToAll = async function (req, res) {
     let messages = [];
 
     for (const token of tokenListFiltered) {
-      // Check that all your push tokens appear to be valid Expo push tokens
       if (!Expo.isExpoPushToken(token)) {
         continue;
       }
