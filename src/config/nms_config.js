@@ -23,8 +23,8 @@ if (process.env.NODE_ENV === "production") {
       },
       https: {
         port: 8443,
-        key: "/etc/letsencrypt/live/redtrader-api.com/privkey.pem",
-        cert: "/etc/letsencrypt/live/redtrader-api.com/cert.pem",
+        key: "/etc/letsencrypt/live/redtrader-api-v2.com/privkey.pem",
+        cert: "/etc/letsencrypt/live/redtrader-api-v2.com/cert.pem",
         passphrase: "",
       },
       auth: {

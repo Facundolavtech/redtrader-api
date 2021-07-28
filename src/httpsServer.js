@@ -15,15 +15,15 @@ const public_url = "https://redtrader-api.com:9443";
 
 // Certificate
 const key = fs.readFileSync(
-  "/etc/letsencrypt/live/redtrader-api.com/privkey.pem",
+  "/etc/letsencrypt/live/redtrader-api-v2.com/privkey.pem",
   "utf8"
 );
 const cert = fs.readFileSync(
-  "/etc/letsencrypt/live/redtrader-api.com/cert.pem",
+  "/etc/letsencrypt/live/redtrader-api-v2.com/cert.pem",
   "utf8"
 );
 const ca = fs.readFileSync(
-  "/etc/letsencrypt/live/redtrader-api.com/chain.pem",
+  "/etc/letsencrypt/live/redtrader-api-v2.com/chain.pem",
   "utf8"
 );
 
